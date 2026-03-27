@@ -16,7 +16,7 @@ export function DishCard({ dish, onAdd }: DishCardProps) {
 						{dish.name}
 					</h3>
 					<span className="text-sm text-[var(--palm)] font-medium tabular-nums shrink-0">
-						${(dish.priceCents / 100).toFixed(2)}
+						€{(dish.priceCents / 100).toFixed(2)}
 					</span>
 				</div>
 				<p className="text-sm text-[var(--sea-ink-soft)] leading-relaxed mt-1 line-clamp-2">
@@ -26,9 +26,9 @@ export function DishCard({ dish, onAdd }: DishCardProps) {
 			<button
 				type="button"
 				onClick={onAdd}
-				className="dish-add-btn shrink-0 w-9 h-9 rounded-full bg-[var(--lagoon)] text-white flex items-center justify-center border-0 mt-0.5"
+				className="dish-add-btn shrink-0 w-8 h-8 rounded-full bg-[var(--lagoon)] text-white flex items-center justify-center border-0 mt-0.5"
 			>
-				<Plus size={18} strokeWidth={2.5} />
+				<Plus size={16} strokeWidth={2.5} />
 			</button>
 		</div>
 	)

@@ -1,12 +1,22 @@
 import { useState } from 'react'
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, ChevronUp } from 'lucide-react'
+import { ArrowLeft, ChevronUp, User } from 'lucide-react'
 
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
 import { DishCard } from '#/components/DishCard'
 import { OrderSummary } from '#/components/OrderSummary'
+
+const NAME_KEY = 'kimchi-train:name'
+
+function getDefaultName(): string {
+	try {
+		return localStorage.getItem(NAME_KEY) ?? ''
+	} catch {
+		return ''
+	}
+}
 
 export const Route = createFileRoute('/train/$orderId')({
 	component: OrderPage,
@@ -20,6 +30,14 @@ function OrderPage() {
 	const [orders] = useQuery(queries.orders())
 	const [orderItems] = useQuery(queries.orderItems())
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
+	const [defaultName, setDefaultName] = useState(getDefaultName)
+
+	function saveDefaultName(name: string) {
+		setDefaultName(name)
+		try {
+			localStorage.setItem(NAME_KEY, name)
+		} catch {}
+	}
 
 	const groupMap = new Map(dishGroups.map((g) => [g.id, g.name]))
 	const grouped = dishes.reduce<Map<number, typeof dishes>>((acc, d) => {
@@ -44,6 +62,7 @@ function OrderPage() {
 				dishId,
 				orderId,
 				priceCents,
+				orderer: defaultName,
 			}),
 		)
 	}
@@ -95,6 +114,16 @@ function OrderPage() {
 					<span className="text-sm font-medium text-[var(--sea-ink)]">
 						Order {orderId.slice(-5)}
 					</span>
+					<div className="ml-auto flex items-center gap-1.5">
+						<User size={14} className="text-[var(--sea-ink-soft)]" />
+						<input
+							type="text"
+							value={defaultName}
+							onChange={(e) => saveDefaultName(e.target.value)}
+							placeholder="Your name"
+							className="text-sm bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none w-28 py-1 placeholder:text-[var(--sea-ink-soft)] placeholder:opacity-50 focus:border-[var(--lagoon)]"
+						/>
+					</div>
 				</div>
 			</nav>
 
@@ -146,7 +175,7 @@ function OrderPage() {
 							</span>
 							<div className="flex items-center gap-3">
 								<span className="text-sm font-bold text-[var(--palm)] tabular-nums">
-									${(totalCents / 100).toFixed(2)}
+									€{(totalCents / 100).toFixed(2)}
 								</span>
 								<ChevronUp
 									size={18}

@@ -18,11 +18,11 @@ export const mutators = defineMutators({
 	},
 	orderItems: {
 		add: defineMutator<
-			{ dishId: number; orderId: string; priceCents: number }
+			{ dishId: number; orderId: string; priceCents: number; orderer: string }
 		>(async ({ tx, args }) => {
 			await tx.mutate.orderItems.insert({
 				id: ulid(),
-				orderer: '',
+				orderer: args.orderer,
 				dishId: args.dishId,
 				orderId: args.orderId,
 				priceCents: args.priceCents,

@@ -70,7 +70,7 @@ function App() {
 										</span>
 									</div>
 									<span className="text-sm text-[var(--palm)] font-medium tabular-nums">
-										${(totalCents / 100).toFixed(2)}
+										€{(totalCents / 100).toFixed(2)}
 									</span>
 								</Link>
 							)

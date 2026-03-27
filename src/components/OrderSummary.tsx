@@ -104,7 +104,7 @@ export function OrderSummary({
 										{group.dish?.name ?? 'Unknown'}
 									</span>
 									<span className="text-sm text-[var(--palm)] tabular-nums shrink-0">
-										${(lineTotal / 100).toFixed(2)}
+										€{(lineTotal / 100).toFixed(2)}
 									</span>
 								</div>
 								<div className="mt-2 ml-7 flex flex-col gap-1">
@@ -143,7 +143,7 @@ export function OrderSummary({
 						Total
 					</span>
 					<span className="text-base text-[var(--palm)] font-bold tabular-nums">
-						${(totalCents / 100).toFixed(2)}
+						€{(totalCents / 100).toFixed(2)}
 					</span>
 				</div>
 			)}
