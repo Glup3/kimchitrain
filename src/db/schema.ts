@@ -3,13 +3,27 @@ import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 // no default values, should be handled in zero mutations https://bugs.rocicorp.dev/p/zero/issue/3465
 
-export const dishes = pgTable('dishes', {
+export const dishGroups = pgTable('dish_groups', {
 	id: integer().primaryKey(),
 	name: text().notNull(),
 })
 
-export const dishesRelations = relations(dishes, ({ many }) => ({
+export const dishes = pgTable('dishes', {
+	id: integer().primaryKey(),
+	name: text().notNull(),
+	priceCents: integer('price_cents').notNull(),
+	description: text().notNull(),
+	groupId: integer('group_id')
+		.notNull()
+		.references(() => dishGroups.id),
+})
+
+export const dishesRelations = relations(dishes, ({ one, many }) => ({
 	orderItems: many(orderItems),
+	group: one(dishGroups, {
+		fields: [dishes.groupId],
+		references: [dishGroups.id],
+	}),
 }))
 
 export const orders = pgTable('orders', {
@@ -28,7 +42,7 @@ export const orderItems = pgTable('order_items', {
 	dishId: integer('dish_id')
 		.notNull()
 		.references(() => dishes.id),
-	orderId: varchar({ length: 26 })
+	orderId: varchar('order_id', { length: 26 })
 		.notNull()
 		.references(() => orders.id),
 })
