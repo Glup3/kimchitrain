@@ -60,14 +60,26 @@ function App() {
 									params={{ orderId: order.id }}
 									className="flex items-center justify-between py-4 text-[var(--sea-ink)] no-underline"
 								>
-									<div className="flex items-center gap-3">
-										<span className="text-base font-medium">
-											Order {order.id.slice(-5)}
-										</span>
-										<span className="text-sm text-[var(--sea-ink-soft)]">
-											{items.length}{' '}
-											{items.length === 1 ? 'item' : 'items'}
-										</span>
+									<div className="flex flex-col gap-0.5">
+										<div className="flex items-center gap-3">
+											<span className="text-base font-medium">
+												Order {order.id.slice(-5)}
+											</span>
+											<span className="text-sm text-[var(--sea-ink-soft)]">
+												{items.length}{' '}
+												{items.length === 1 ? 'item' : 'items'}
+											</span>
+										</div>
+										{order.createdAt != null && (
+											<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">
+												{new Date(order.createdAt).toLocaleDateString(undefined, {
+													day: 'numeric',
+													month: 'short',
+													hour: '2-digit',
+													minute: '2-digit',
+												})}
+											</span>
+										)}
 									</div>
 									<span className="text-sm text-[var(--palm)] font-medium tabular-nums">
 										€{(totalCents / 100).toFixed(2)}

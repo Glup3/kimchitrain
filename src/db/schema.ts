@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 // no default values, should be handled in zero mutations https://bugs.rocicorp.dev/p/zero/issue/3465
 
@@ -13,6 +13,7 @@ export const dishes = pgTable('dishes', {
 	name: text().notNull(),
 	priceCents: integer('price_cents').notNull(),
 	description: text().notNull(),
+	isPopular: boolean('is_popular').notNull(),
 	groupId: integer('group_id')
 		.notNull()
 		.references(() => dishGroups.id),

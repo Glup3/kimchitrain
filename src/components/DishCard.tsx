@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Flame, Plus } from 'lucide-react'
 
 import type { Dish } from '#/db/zero-schema'
 
@@ -15,6 +15,9 @@ export function DishCard({ dish, onAdd }: DishCardProps) {
 					<h3 className="text-base font-semibold text-[var(--sea-ink)] leading-tight truncate">
 						{dish.name}
 					</h3>
+					{dish.isPopular && (
+						<Flame size={14} className="text-orange-500 shrink-0 mt-0.5" />
+					)}
 					<span className="text-sm text-[var(--palm)] font-medium tabular-nums shrink-0">
 						€{(dish.priceCents / 100).toFixed(2)}
 					</span>

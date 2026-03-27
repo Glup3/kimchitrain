@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, ChevronUp, User } from 'lucide-react'
+import { ArrowLeft, ChevronUp, Flame, User } from 'lucide-react'
 
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
@@ -130,6 +130,10 @@ function OrderPage() {
 			<div className="page-wrap py-8 pb-28 lg:pb-8">
 				<div className="flex flex-col lg:flex-row gap-8">
 					<section className="flex-1 min-w-0 self-start">
+						<div className="flex items-center gap-1.5 mb-4 text-xs text-[var(--sea-ink-soft)]">
+							<Flame size={13} className="text-orange-500" />
+							<span>Popular</span>
+						</div>
 						{[...grouped.entries()].map(([groupId, groupDishes]) => (
 							<div key={groupId} className="mb-6">
 								<h2 className="island-kicker mb-2">
