@@ -16,9 +16,18 @@ function OrderPage() {
 	const { orderId } = Route.useParams()
 	const zero = useZero()
 	const [dishes] = useQuery(queries.dishes())
+	const [dishGroups] = useQuery(queries.dishGroups())
 	const [orders] = useQuery(queries.orders())
 	const [orderItems] = useQuery(queries.orderItems())
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
+
+	const groupMap = new Map(dishGroups.map((g) => [g.id, g.name]))
+	const grouped = dishes.reduce<Map<number, typeof dishes>>((acc, d) => {
+		const list = acc.get(d.groupId) ?? []
+		list.push(d)
+		acc.set(d.groupId, list)
+		return acc
+	}, new Map())
 
 	const order = orders.find((o) => o.id === orderId)
 	const currentOrderItems = orderItems.filter(
@@ -92,17 +101,24 @@ function OrderPage() {
 			<div className="page-wrap py-6 pb-24 lg:pb-6">
 				<div className="flex flex-col lg:flex-row gap-6">
 					<section className="flex-1 min-w-0 self-start">
-						<div className="divide-y divide-[var(--line)]">
-							{dishes.map((dish) => (
-								<DishCard
-									key={dish.id}
-									dish={dish}
-									onAdd={() =>
-										handleAddDish(dish.id, dish.priceCents)
-									}
-								/>
-							))}
-						</div>
+						{[...grouped.entries()].map(([groupId, groupDishes]) => (
+							<div key={groupId} className="mb-4">
+								<h2 className="island-kicker mb-1">
+									{groupMap.get(groupId) ?? 'Other'}
+								</h2>
+								<div className="divide-y divide-[var(--line)]">
+									{groupDishes.map((dish) => (
+										<DishCard
+											key={dish.id}
+											dish={dish}
+											onAdd={() =>
+												handleAddDish(dish.id, dish.priceCents)
+											}
+										/>
+									))}
+								</div>
+							</div>
+						))}
 					</section>
 
 					<aside className="hidden lg:block w-72 shrink-0">
