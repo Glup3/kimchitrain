@@ -1,6 +1,45 @@
 import { Minus } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { Dish, OrderItem } from '#/db/zero-schema'
+
+function OrdererInput({
+	value,
+	onCommit,
+}: {
+	value: string
+	onCommit: (v: string) => void
+}) {
+	const [draft, setDraft] = useState(value)
+	const ref = useRef<HTMLInputElement>(null)
+
+	useEffect(() => {
+		if (document.activeElement !== ref.current) {
+			setDraft(value)
+		}
+	}, [value])
+
+	function commit() {
+		if (draft !== value) onCommit(draft)
+	}
+
+	return (
+		<input
+			ref={ref}
+			type="text"
+			value={draft}
+			onChange={(e) => setDraft(e.target.value)}
+			onBlur={commit}
+			onKeyDown={(e) => {
+				if (e.key === 'Enter') {
+					e.currentTarget.blur()
+				}
+			}}
+			placeholder="Name…"
+			className="orderer-input flex-1 min-w-0 text-[0.68rem] px-1 py-0.5 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
+		/>
+	)
+}
 
 interface OrderSummaryProps {
 	items: OrderItem[]
@@ -74,17 +113,11 @@ export function OrderSummary({
 											key={item.id}
 											className="flex items-center gap-1.5"
 										>
-											<input
-												type="text"
+											<OrdererInput
 												value={item.orderer}
-												onChange={(e) =>
-													onUpdateOrderer(
-														item.id,
-														e.target.value,
-													)
+												onCommit={(v) =>
+													onUpdateOrderer(item.id, v)
 												}
-												placeholder="Name…"
-												className="orderer-input flex-1 min-w-0 text-[0.68rem] px-1 py-0.5 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
 											/>
 											<button
 												type="button"
