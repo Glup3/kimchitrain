@@ -1,123 +1,83 @@
-import { useEffect, useRef, useState } from 'react'
 import { useQuery, useZero } from '@rocicorp/zero/react'
-import { createFileRoute } from '@tanstack/react-router'
-import { ChevronUp } from 'lucide-react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Plus } from 'lucide-react'
+import { ulid } from 'ulid'
 
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
-import { DishCard } from '#/components/DishCard'
-import { OrderSummary } from '#/components/OrderSummary'
 
 export const Route = createFileRoute('/')({ component: App })
 
 function App() {
 	const zero = useZero()
-	const [dishes] = useQuery(queries.dishes())
+	const navigate = useNavigate()
 	const [orders] = useQuery(queries.orders())
 	const [orderItems] = useQuery(queries.orderItems())
-	const orderCreated = useRef(false)
-	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
 
-	const currentOrder = orders[0]
-	const currentOrderItems = orderItems.filter(
-		(item) => item.orderId === currentOrder?.id,
-	)
-	const totalCents = currentOrderItems.reduce(
-		(sum, item) => sum + item.priceCents,
-		0,
-	)
-
-	useEffect(() => {
-		if (orders.length === 0 && !orderCreated.current) {
-			orderCreated.current = true
-			zero.mutate(mutators.orders.create())
-		}
-	}, [orders.length, zero])
-
-	function handleAddDish(dishId: number, priceCents: number) {
-		if (!currentOrder) return
-		zero.mutate(
-			mutators.orderItems.add({
-				dishId,
-				orderId: currentOrder.id,
-				priceCents,
-			}),
-		)
-	}
-
-	function handleRemoveItem(id: string) {
-		zero.mutate(mutators.orderItems.remove({ id }))
-	}
-
-	function handleUpdateOrderer(id: string, orderer: string) {
-		zero.mutate(mutators.orderItems.updateOrderer({ id, orderer }))
-	}
-
-	const summaryProps = {
-		items: currentOrderItems,
-		dishes,
-		onRemoveItem: handleRemoveItem,
-		onUpdateOrderer: handleUpdateOrderer,
+	async function handleCreateOrder() {
+		const id = ulid()
+		zero.mutate(mutators.orders.createWithId({ id }))
+		void navigate({ to: '/train/$orderId', params: { orderId: id } })
 	}
 
 	return (
-		<div className="page-wrap py-6 pb-24 lg:pb-6">
-			<header className="mb-6 rise-in">
-				<h1 className="display-title text-2xl font-bold text-[var(--sea-ink)] tracking-tight">
-					Kimchi Train
-				</h1>
-			</header>
-
-			<div className="flex flex-col lg:flex-row gap-6">
-				<section className="flex-1 min-w-0 self-start">
-					<div className="divide-y divide-[var(--line)]">
-						{dishes.map((dish) => (
-							<DishCard
-								key={dish.id}
-								dish={dish}
-								onAdd={() =>
-									handleAddDish(dish.id, dish.priceCents)
-								}
-							/>
-						))}
-					</div>
-				</section>
-
-				<aside className="hidden lg:block w-72 shrink-0">
-					<div className="sticky top-4">
-						<OrderSummary {...summaryProps} />
-					</div>
-				</aside>
-			</div>
-
-			{currentOrderItems.length > 0 && (
-				<div className="lg:hidden fixed bottom-0 inset-x-0 z-50 mobile-summary-bar">
-					{mobileSheetOpen && (
-						<div className="max-h-[55vh] overflow-y-auto rounded-t-xl">
-							<OrderSummary {...summaryProps} />
-						</div>
-					)}
+		<>
+			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
+				<div className="page-wrap flex items-center justify-between h-11">
+					<h1 className="display-title text-base font-bold text-[var(--sea-ink)] tracking-tight">
+						Kimchi Train
+					</h1>
 					<button
 						type="button"
-						onClick={() => setMobileSheetOpen((v) => !v)}
-						className="w-full flex items-center justify-between px-4 py-2.5 island-shell border-t border-[var(--line)] rounded-none"
+						onClick={handleCreateOrder}
+						className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--lagoon)] text-white border-0 cursor-pointer hover:brightness-110"
 					>
-						<span className="text-xs font-medium text-[var(--sea-ink)]">
-							{currentOrderItems.length}{' '}
-							{currentOrderItems.length === 1 ? 'item' : 'items'}
-						</span>
-						<div className="flex items-center gap-2">
-							<span className="text-xs font-bold text-[var(--palm)] tabular-nums">
-								${(totalCents / 100).toFixed(2)}
-							</span>
-							<ChevronUp
-								size={14}
-								className={`text-[var(--sea-ink-soft)] transition-transform ${mobileSheetOpen ? 'rotate-180' : ''}`}
-							/>
-						</div>
+						<Plus size={13} strokeWidth={2.5} />
+						New Order
 					</button>
 				</div>
-			)}
-		</div>
+			</nav>
+
+			<div className="page-wrap py-6">
+				{orders.length === 0 ? (
+					<p className="text-xs text-[var(--sea-ink-soft)] text-center py-12">
+						No orders yet
+					</p>
+				) : (
+					<div className="divide-y divide-[var(--line)]">
+						{[...orders].reverse().map((order) => {
+							const items = orderItems.filter(
+								(item) => item.orderId === order.id,
+							)
+							const totalCents = items.reduce(
+								(sum, item) => sum + item.priceCents,
+								0,
+							)
+							return (
+								<Link
+									key={order.id}
+									to="/train/$orderId"
+									params={{ orderId: order.id }}
+									className="flex items-center justify-between py-3 text-[var(--sea-ink)] no-underline"
+								>
+									<div className="flex items-center gap-3">
+										<span className="text-sm font-medium">
+											Order {order.id.slice(-5)}
+										</span>
+										<span className="text-xs text-[var(--sea-ink-soft)]">
+											{items.length}{' '}
+											{items.length === 1 ? 'item' : 'items'}
+										</span>
+									</div>
+									<span className="text-xs text-[var(--palm)] font-medium tabular-nums">
+										${(totalCents / 100).toFixed(2)}
+									</span>
+								</Link>
+							)
+						})}
+					</div>
+				)}
+			</div>
+		</>
 	)
 }

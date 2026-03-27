@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrainOrderIdRouteImport } from './routes/train/$orderId'
 import { Route as ApiQueryRouteImport } from './routes/api.query'
 import { Route as ApiMutateRouteImport } from './routes/api.mutate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainOrderIdRoute = TrainOrderIdRouteImport.update({
+  id: '/train/$orderId',
+  path: '/train/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiQueryRoute = ApiQueryRouteImport.update({
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
+  '/train/$orderId': typeof TrainOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
+  '/train/$orderId': typeof TrainOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
+  '/train/$orderId': typeof TrainOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/mutate' | '/api/query'
+  fullPaths: '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/mutate' | '/api/query'
-  id: '__root__' | '/' | '/api/mutate' | '/api/query'
+  to: '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
+  id: '__root__' | '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiMutateRoute: typeof ApiMutateRoute
   ApiQueryRoute: typeof ApiQueryRoute
+  TrainOrderIdRoute: typeof TrainOrderIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/train/$orderId': {
+      id: '/train/$orderId'
+      path: '/train/$orderId'
+      fullPath: '/train/$orderId'
+      preLoaderRoute: typeof TrainOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/query': {
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiMutateRoute: ApiMutateRoute,
   ApiQueryRoute: ApiQueryRoute,
+  TrainOrderIdRoute: TrainOrderIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

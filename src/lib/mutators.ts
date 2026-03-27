@@ -9,6 +9,12 @@ export const mutators = defineMutators({
 				createdAt: Date.now(),
 			})
 		}),
+		createWithId: defineMutator<{ id: string }>(async ({ tx, args }) => {
+			await tx.mutate.orders.insert({
+				id: args.id,
+				createdAt: Date.now(),
+			})
+		}),
 	},
 	orderItems: {
 		add: defineMutator<
