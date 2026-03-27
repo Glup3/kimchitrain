@@ -56,19 +56,11 @@ interface OrderSummaryProps {
 	readOnly?: boolean
 }
 
-export function OrderSummary({
-	items,
-	dishes,
-	onRemoveItem,
-	onUpdateOrderer,
-	readOnly,
-}: OrderSummaryProps) {
+export function OrderSummary({ items, dishes, onRemoveItem, onUpdateOrderer, readOnly }: OrderSummaryProps) {
 	const dishMap = new Map(dishes.map((d) => [d.id, d]))
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
 
-	const grouped = items.reduce<
-		Map<number, { dish: Dish | undefined; items: OrderItem[] }>
-	>((acc, item) => {
+	const grouped = items.reduce<Map<number, { dish: Dish | undefined; items: OrderItem[] }>>((acc, item) => {
 		const group = acc.get(item.dishId) ?? {
 			dish: dishMap.get(item.dishId),
 			items: [],
@@ -79,66 +71,52 @@ export function OrderSummary({
 	}, new Map())
 
 	return (
-		<div className="island-shell rounded-xl overflow-hidden">
-			<div className="px-5 py-3 border-b border-[var(--line)] flex items-center gap-2">
-				<h2 className="text-base font-semibold text-[var(--sea-ink)]">
-					Order
-				</h2>
+		<div className="island-shell overflow-hidden rounded-xl">
+			<div className="flex items-center gap-2 border-b border-[var(--line)] px-5 py-3">
+				<h2 className="text-base font-semibold text-[var(--sea-ink)]">Order</h2>
 				{items.length > 0 && (
-					<span className="text-xs font-bold bg-[var(--lagoon)] text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
+					<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--lagoon)] text-xs leading-none font-bold text-white">
 						{items.length}
 					</span>
 				)}
 			</div>
 
 			{items.length === 0 ? (
-				<p className="px-5 py-8 text-sm text-[var(--sea-ink-soft)] text-center">
-					No items yet
-				</p>
+				<p className="px-5 py-8 text-center text-sm text-[var(--sea-ink-soft)]">No items yet</p>
 			) : (
 				<div className="divide-y divide-[var(--line)]">
 					{[...grouped.values()].map((group) => {
 						const qty = group.items.length
-						const lineTotal = group.items.reduce(
-							(s, i) => s + i.priceCents,
-							0,
-						)
+						const lineTotal = group.items.reduce((s, i) => s + i.priceCents, 0)
 						return (
 							<div key={group.items[0]!.dishId} className="px-5 py-3">
 								<div className="flex items-center gap-3">
-									<span className="text-lg font-bold text-[var(--lagoon)] tabular-nums w-7 text-center shrink-0">
+									<span className="w-7 shrink-0 text-center text-lg font-bold text-[var(--lagoon)] tabular-nums">
 										{qty}x
 									</span>
-									<span className="text-sm font-semibold text-[var(--sea-ink)] flex-1 min-w-0 truncate">
+									<span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--sea-ink)]">
 										{group.dish?.name ?? 'Unknown'}
 									</span>
-									<span className="text-sm text-[var(--palm)] tabular-nums shrink-0">
+									<span className="shrink-0 text-sm text-[var(--palm)] tabular-nums">
 										€{(lineTotal / 100).toFixed(2)}
 									</span>
 								</div>
 								<div className="mt-2 ml-7 flex flex-col gap-1">
 									{group.items.map((item) => (
-										<div
-											key={item.id}
-											className="flex items-center gap-2"
-										>
+										<div key={item.id} className="flex items-center gap-2">
 											<OrdererInput
 												value={item.orderer}
-												onCommit={(v) =>
-													onUpdateOrderer(item.id, v)
-												}
+												onCommit={(v) => onUpdateOrderer(item.id, v)}
 												readOnly={readOnly}
 											/>
 											{!readOnly && (
-											<button
-												type="button"
-												onClick={() =>
-													onRemoveItem(item.id)
-												}
-												className="order-remove-btn shrink-0 w-6 h-6 rounded flex items-center justify-center text-[var(--sea-ink-soft)] border-0 bg-transparent"
-											>
-												<Minus size={14} />
-											</button>
+												<button
+													type="button"
+													onClick={() => onRemoveItem(item.id)}
+													className="order-remove-btn flex h-6 w-6 shrink-0 items-center justify-center rounded border-0 bg-transparent text-[var(--sea-ink-soft)]"
+												>
+													<Minus size={14} />
+												</button>
 											)}
 										</div>
 									))}
@@ -150,13 +128,9 @@ export function OrderSummary({
 			)}
 
 			{items.length > 0 && (
-				<div className="px-5 py-3 border-t border-[var(--line)] flex items-center justify-between">
-					<span className="text-sm font-semibold text-[var(--sea-ink)]">
-						Total
-					</span>
-					<span className="text-base text-[var(--palm)] font-bold tabular-nums">
-						€{(totalCents / 100).toFixed(2)}
-					</span>
+				<div className="flex items-center justify-between border-t border-[var(--line)] px-5 py-3">
+					<span className="text-sm font-semibold text-[var(--sea-ink)]">Total</span>
+					<span className="text-base font-bold text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
 				</div>
 			)}
 		</div>
