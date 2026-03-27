@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/oxfmt/configuration_schema.json",
-	"ignorePatterns": ["routeTree.gen.ts", "src/kaneo/"],
+	"ignorePatterns": ["routeTree.gen.ts", "zero-schema.ts"],
 	"printWidth": 120,
 	"semi": false,
 	"singleQuote": true,

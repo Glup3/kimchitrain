@@ -2,6 +2,16 @@ Welcome to your new TanStack Start app!
 
 # Getting Started
 
+```sh
+docker run -d --name zero-postgres \
+  -e POSTGRES_PASSWORD="password" \
+  -p 5432:5432 \
+  postgres:16-alpine \
+  # IMPORTANT: logical WAL level is required for Zero
+  # to sync data to its SQLite replica
+  postgres -c wal_level=logical
+```
+
 To run this application:
 
 ```bash

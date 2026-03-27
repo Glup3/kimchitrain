@@ -36,5 +36,5 @@
 		"builtin": true
 	},
 	"globals": {},
-	"ignorePatterns": ["routeTree.gen.ts", "src/kaneo/"]
+	"ignorePatterns": ["routeTree.gen.ts", "zero-schema.ts"]
 }

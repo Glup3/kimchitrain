@@ -1,9 +1,10 @@
+import type { ZeroOptions } from '@rocicorp/zero'
+import { ZeroProvider } from '@rocicorp/zero/react'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
-import Footer from '../components/Footer'
-import Header from '../components/Header'
+import { schema } from '#/db/zero-schema'
 
 import appCss from '../styles.css?url'
 
@@ -33,6 +34,12 @@ export const Route = createRootRoute({
 	shellComponent: RootDocument,
 })
 
+const opts: ZeroOptions = {
+	userID: 'anon',
+	cacheURL: 'http://localhost:4848',
+	schema: schema,
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
@@ -41,9 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="font-sans [overflow-wrap:anywhere] antialiased selection:bg-[rgba(79,184,178,0.24)]">
-				<Header />
-				{children}
-				<Footer />
+				<ZeroProvider {...opts}>{children}</ZeroProvider>
 				<TanStackDevtools
 					config={{
 						position: 'bottom-right',

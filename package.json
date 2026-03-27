@@ -20,9 +20,11 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
 		"db:pull": "drizzle-kit pull",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "drizzle-kit studio",
+		"db:zero": "drizzle-zero generate -o src/db/zero-schema.ts"
 	},
 	"dependencies": {
+		"@rocicorp/zero": "^1.0.0",
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",
@@ -38,6 +40,7 @@
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"tailwindcss": "^4.1.18",
+		"ulid": "^3.0.2",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
@@ -52,6 +55,7 @@
 		"@typescript/native-preview": "^7.0.0-dev.20260326.1",
 		"@vitejs/plugin-react": "^5.1.4",
 		"dotenv": "^17.3.1",
+		"drizzle-zero": "^0.18.0",
 		"jsdom": "^28.1.0",
 		"oxfmt": "^0.42.0",
 		"oxlint": "^1.57.0",
