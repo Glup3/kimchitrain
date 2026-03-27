@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { CheckCircle2, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
+import { AnalyticsSection } from '#/components/analytics/AnalyticsSection'
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
@@ -39,6 +40,7 @@ function App() {
 			</nav>
 
 			<div className="page-wrap py-8">
+				<AnalyticsSection />
 				{orders.length === 0 ? (
 					<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
 				) : (

@@ -1,0 +1,59 @@
+import { CheckCircle2, Coins, Receipt, TrendingUp } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
+interface SummaryCardsProps {
+	totalOrders: number
+	totalRevenueCents: number
+	avgOrderCents: number
+	completionRate: number
+}
+
+const CARDS: { label: string; icon: LucideIcon; accent: string }[] = [
+	{ label: 'Total Orders', icon: Receipt, accent: 'var(--lagoon)' },
+	{ label: 'Revenue', icon: Coins, accent: 'var(--palm)' },
+	{ label: 'Avg. Order', icon: TrendingUp, accent: 'var(--lagoon-deep)' },
+	{ label: 'Completed', icon: CheckCircle2, accent: 'var(--palm)' },
+]
+
+export function SummaryCards({ totalOrders, totalRevenueCents, avgOrderCents, completionRate }: SummaryCardsProps) {
+	const values = [
+		totalOrders.toLocaleString(),
+		`€${(totalRevenueCents / 100).toFixed(2)}`,
+		`€${(avgOrderCents / 100).toFixed(2)}`,
+		`${Math.round(completionRate)}%`,
+	]
+
+	return (
+		<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+			{CARDS.map((card, i) => {
+				const Icon = card.icon
+				return (
+					<div
+						key={card.label}
+						className="rise-in island-shell group overflow-hidden rounded-xl transition-transform duration-200 hover:-translate-y-0.5"
+						style={{ animationDelay: `${i * 80}ms` }}
+					>
+						<div
+							className="h-[3px] opacity-75 transition-opacity duration-200 group-hover:opacity-100"
+							style={{ backgroundColor: card.accent }}
+						/>
+						<div className="p-4 sm:p-5">
+							<div className="mb-3 flex items-center gap-2.5">
+								<div
+									className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+									style={{ backgroundColor: `color-mix(in srgb, ${card.accent} 12%, transparent)` }}
+								>
+									<Icon size={14} strokeWidth={2.5} style={{ color: card.accent }} />
+								</div>
+								<span className="island-kicker text-[0.62rem]">{card.label}</span>
+							</div>
+							<div className="display-title text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: card.accent }}>
+								{values[i]}
+							</div>
+						</div>
+					</div>
+				)
+			})}
+		</div>
+	)
+}
