@@ -4,21 +4,19 @@ import { z } from 'zod'
 
 export const mutators = defineMutators({
 	orders: {
-		create: defineMutator(async ({ tx }) => {
+		createWithId: defineMutator(z.object({ id: z.string() }), async ({ tx, args }) => {
 			await tx.mutate.orders.insert({
-				id: ulid(),
+				id: args.id,
+				completed: false,
 				createdAt: Date.now(),
 			})
 		}),
-		createWithId: defineMutator(
-			z.object({ id: z.string() }),
-			async ({ tx, args }) => {
-				await tx.mutate.orders.insert({
-					id: args.id,
-					createdAt: Date.now(),
-				})
-			},
-		),
+		setCompleted: defineMutator(z.object({ id: z.string(), completed: z.boolean() }), async ({ tx, args }) => {
+			await tx.mutate.orders.update({
+				id: args.id,
+				completed: args.completed,
+			})
+		}),
 	},
 	orderItems: {
 		add: defineMutator(
@@ -38,22 +36,16 @@ export const mutators = defineMutators({
 				})
 			},
 		),
-		updateOrderer: defineMutator(
-			z.object({ id: z.string(), orderer: z.string() }),
-			async ({ tx, args }) => {
-				await tx.mutate.orderItems.update({
-					id: args.id,
-					orderer: args.orderer,
-				})
-			},
-		),
-		remove: defineMutator(
-			z.object({ id: z.string() }),
-			async ({ tx, args }) => {
-				await tx.mutate.orderItems.delete({
-					id: args.id,
-				})
-			},
-		),
+		updateOrderer: defineMutator(z.object({ id: z.string(), orderer: z.string() }), async ({ tx, args }) => {
+			await tx.mutate.orderItems.update({
+				id: args.id,
+				orderer: args.orderer,
+			})
+		}),
+		remove: defineMutator(z.object({ id: z.string() }), async ({ tx, args }) => {
+			await tx.mutate.orderItems.delete({
+				id: args.id,
+			})
+		}),
 	},
 })

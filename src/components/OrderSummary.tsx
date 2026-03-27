@@ -2,13 +2,16 @@ import { Minus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import type { Dish, OrderItem } from '#/db/zero-schema'
+import { cn } from '#/lib/utils'
 
 function OrdererInput({
 	value,
 	onCommit,
+	readOnly,
 }: {
 	value: string
 	onCommit: (v: string) => void
+	readOnly?: boolean
 }) {
 	const [draft, setDraft] = useState(value)
 	const ref = useRef<HTMLInputElement>(null)
@@ -36,7 +39,11 @@ function OrdererInput({
 				}
 			}}
 			placeholder="Name…"
-			className="orderer-input flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
+			disabled={readOnly}
+			className={cn(
+				'orderer-input flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all',
+				readOnly && 'opacity-60 cursor-default border-transparent',
+			)}
 		/>
 	)
 }
@@ -46,6 +53,7 @@ interface OrderSummaryProps {
 	dishes: Dish[]
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
+	readOnly?: boolean
 }
 
 export function OrderSummary({
@@ -53,6 +61,7 @@ export function OrderSummary({
 	dishes,
 	onRemoveItem,
 	onUpdateOrderer,
+	readOnly,
 }: OrderSummaryProps) {
 	const dishMap = new Map(dishes.map((d) => [d.id, d]))
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
@@ -118,7 +127,9 @@ export function OrderSummary({
 												onCommit={(v) =>
 													onUpdateOrderer(item.id, v)
 												}
+												readOnly={readOnly}
 											/>
+											{!readOnly && (
 											<button
 												type="button"
 												onClick={() =>
@@ -128,6 +139,7 @@ export function OrderSummary({
 											>
 												<Minus size={14} />
 											</button>
+											)}
 										</div>
 									))}
 								</div>

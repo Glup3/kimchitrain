@@ -29,6 +29,7 @@ export const dishesRelations = relations(dishes, ({ one, many }) => ({
 
 export const orders = pgTable('orders', {
 	id: varchar({ length: 26 }).primaryKey(),
+	completed: boolean().notNull(),
 	createdAt: timestamp('created_at'),
 })
 

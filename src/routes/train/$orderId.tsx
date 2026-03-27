@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react'
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, Check, ChevronUp, Flame, Link2, User } from 'lucide-react'
+import { ArrowLeft, Check, CheckCircle2, ChevronUp, Circle, Flame, Link2, User } from 'lucide-react'
 
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
+import { cn } from '#/lib/utils'
 import { DishCard } from '#/components/DishCard'
 import { OrderSummary } from '#/components/OrderSummary'
 
@@ -41,6 +42,16 @@ function OrderPage() {
 		})
 	}, [])
 
+	function handleToggleCompleted() {
+		if (!order) return
+		zero.mutate(
+			mutators.orders.setCompleted({
+				id: orderId,
+				completed: !order.completed,
+			}),
+		)
+	}
+
 	function saveDefaultName(name: string) {
 		setDefaultName(name)
 		try {
@@ -61,6 +72,7 @@ function OrderPage() {
 	}, new Map())
 
 	const order = orders.find((o) => o.id === orderId)
+	const isCompleted = order?.completed ?? false
 	const currentOrderItems = orderItems.filter(
 		(item) => item.orderId === orderId,
 	)
@@ -93,6 +105,7 @@ function OrderPage() {
 		dishes,
 		onRemoveItem: handleRemoveItem,
 		onUpdateOrderer: handleUpdateOrderer,
+		readOnly: isCompleted,
 	}
 
 	if (!order) {
@@ -135,6 +148,19 @@ function OrderPage() {
 					<div className="ml-auto flex items-center gap-1.5">
 						<button
 							type="button"
+							onClick={handleToggleCompleted}
+							className={cn(
+								'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border cursor-pointer transition-colors',
+								isCompleted
+									? 'border-[var(--lagoon)] bg-[var(--lagoon)]/10 text-[var(--lagoon)] hover:bg-[var(--lagoon)]/20'
+									: 'border-[var(--line)] bg-transparent text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)] hover:border-[var(--sea-ink-soft)]',
+							)}
+						>
+							{isCompleted ? <CheckCircle2 size={13} /> : <Circle size={13} />}
+							{isCompleted ? 'Completed' : 'Complete'}
+						</button>
+						<button
+							type="button"
 							onClick={handleCopyLink}
 							className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-[var(--line)] bg-transparent text-[var(--sea-ink-soft)] cursor-pointer hover:text-[var(--sea-ink)] hover:border-[var(--sea-ink-soft)] transition-colors"
 						>
@@ -170,6 +196,7 @@ function OrderPage() {
 										<DishCard
 											key={dish.id}
 											dish={dish}
+											disabled={isCompleted}
 											onAdd={() =>
 												handleAddDish(dish.id, dish.priceCents)
 											}
@@ -209,7 +236,10 @@ function OrderPage() {
 								</span>
 								<ChevronUp
 									size={18}
-									className={`text-[var(--sea-ink-soft)] transition-transform ${mobileSheetOpen ? 'rotate-180' : ''}`}
+									className={cn(
+										'text-[var(--sea-ink-soft)] transition-transform',
+										mobileSheetOpen && 'rotate-180',
+									)}
 								/>
 							</div>
 						</button>

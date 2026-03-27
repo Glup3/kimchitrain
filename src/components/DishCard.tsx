@@ -1,13 +1,15 @@
 import { Flame, Plus } from 'lucide-react'
 
 import type { Dish } from '#/db/zero-schema'
+import { cn } from '#/lib/utils'
 
 interface DishCardProps {
 	dish: Dish
 	onAdd: () => void
+	disabled?: boolean
 }
 
-export function DishCard({ dish, onAdd }: DishCardProps) {
+export function DishCard({ dish, onAdd, disabled }: DishCardProps) {
 	return (
 		<div className="py-4">
 			<div className="flex items-center justify-between gap-4">
@@ -25,7 +27,13 @@ export function DishCard({ dish, onAdd }: DishCardProps) {
 				<button
 					type="button"
 					onClick={onAdd}
-					className="dish-add-btn shrink-0 w-8 h-8 rounded-full bg-[var(--lagoon)] text-white flex items-center justify-center border-0"
+					disabled={disabled}
+					className={cn(
+						'dish-add-btn shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center border-0',
+						disabled
+							? 'bg-[var(--line)] cursor-not-allowed opacity-40'
+							: 'bg-[var(--lagoon)] cursor-pointer',
+					)}
 				>
 					<Plus size={16} strokeWidth={2.5} />
 				</button>

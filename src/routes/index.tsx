@@ -1,11 +1,12 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { CheckCircle2, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
+import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -60,17 +61,31 @@ function App() {
 									key={order.id}
 									to="/train/$orderId"
 									params={{ orderId: order.id }}
-									className="flex items-center justify-between py-4 text-[var(--sea-ink)] no-underline"
+									className={cn(
+										'flex items-center justify-between py-4 no-underline',
+										order.completed ? 'opacity-60' : 'text-[var(--sea-ink)]',
+									)}
 								>
 									<div className="flex flex-col gap-0.5">
 										<div className="flex items-center gap-3">
-											<span className="text-base font-medium">
+											<span className={cn(
+												'text-base font-medium',
+												order.completed && 'text-[var(--sea-ink-soft)] line-through',
+											)}>
 												Order #{num}
 											</span>
+											{order.completed && (
+												<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
+													<CheckCircle2 size={12} />
+													Done
+												</span>
+											)}
+											{!order.completed && (
 											<span className="text-sm text-[var(--sea-ink-soft)]">
 												{items.length}{' '}
 												{items.length === 1 ? 'item' : 'items'}
 											</span>
+											)}
 										</div>
 										{order.createdAt != null && (
 											<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">
