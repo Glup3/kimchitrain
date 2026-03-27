@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { Minus } from 'lucide-react'
 
 import type { Dish, OrderItem } from '#/db/zero-schema'
 
@@ -17,6 +17,18 @@ export function OrderSummary({
 }: OrderSummaryProps) {
 	const dishMap = new Map(dishes.map((d) => [d.id, d]))
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
+
+	const grouped = items.reduce<
+		Map<number, { dish: Dish | undefined; items: OrderItem[] }>
+	>((acc, item) => {
+		const group = acc.get(item.dishId) ?? {
+			dish: dishMap.get(item.dishId),
+			items: [],
+		}
+		group.items.push(item)
+		acc.set(item.dishId, group)
+		return acc
+	}, new Map())
 
 	return (
 		<div className="island-shell rounded-xl overflow-hidden">
@@ -37,40 +49,55 @@ export function OrderSummary({
 				</p>
 			) : (
 				<div className="divide-y divide-[var(--line)]">
-					{items.map((item, i) => {
-						const dish = dishMap.get(item.dishId)
+					{[...grouped.values()].map((group) => {
+						const qty = group.items.length
+						const lineTotal = group.items.reduce(
+							(s, i) => s + i.priceCents,
+							0,
+						)
 						return (
-							<div
-								key={item.id}
-								className="order-item-row px-4 py-2.5 flex items-center gap-2"
-								style={{ animationDelay: `${i * 30}ms` }}
-							>
-								<div className="flex-1 min-w-0 flex flex-col gap-1">
-									<div className="flex items-center gap-2">
-										<span className="text-xs font-medium text-[var(--sea-ink)] truncate">
-											{dish?.name ?? 'Unknown'}
-										</span>
-										<span className="text-xs text-[var(--palm)] tabular-nums shrink-0">
-											${(item.priceCents / 100).toFixed(2)}
-										</span>
-									</div>
-									<input
-										type="text"
-										value={item.orderer}
-										onChange={(e) =>
-											onUpdateOrderer(item.id, e.target.value)
-										}
-										placeholder="Name…"
-										className="orderer-input w-full text-[0.68rem] px-2 py-0.5 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
-									/>
+							<div key={group.items[0]!.dishId} className="px-4 py-2.5">
+								<div className="flex items-center gap-2">
+									<span className="text-sm font-bold text-[var(--lagoon)] tabular-nums w-5 text-center shrink-0">
+										{qty}x
+									</span>
+									<span className="text-xs font-semibold text-[var(--sea-ink)] flex-1 min-w-0 truncate">
+										{group.dish?.name ?? 'Unknown'}
+									</span>
+									<span className="text-xs text-[var(--palm)] tabular-nums shrink-0">
+										${(lineTotal / 100).toFixed(2)}
+									</span>
 								</div>
-								<button
-									type="button"
-									onClick={() => onRemoveItem(item.id)}
-									className="order-remove-btn shrink-0 w-5 h-5 rounded flex items-center justify-center text-[var(--sea-ink-soft)] border-0 bg-transparent"
-								>
-									<Trash2 size={11} />
-								</button>
+								<div className="mt-1 ml-5 flex flex-col gap-0.5">
+									{group.items.map((item) => (
+										<div
+											key={item.id}
+											className="flex items-center gap-1.5"
+										>
+											<input
+												type="text"
+												value={item.orderer}
+												onChange={(e) =>
+													onUpdateOrderer(
+														item.id,
+														e.target.value,
+													)
+												}
+												placeholder="Name…"
+												className="orderer-input flex-1 min-w-0 text-[0.68rem] px-1 py-0.5 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
+											/>
+											<button
+												type="button"
+												onClick={() =>
+													onRemoveItem(item.id)
+												}
+												className="order-remove-btn shrink-0 w-4 h-4 rounded flex items-center justify-center text-[var(--sea-ink-soft)] border-0 bg-transparent"
+											>
+												<Minus size={10} />
+											</button>
+										</div>
+									))}
+								</div>
 							</div>
 						)
 					})}
