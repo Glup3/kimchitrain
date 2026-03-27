@@ -1,5 +1,6 @@
 import { defineMutator, defineMutators } from '@rocicorp/zero'
 import { ulid } from 'ulid'
+import { z } from 'zod'
 
 export const mutators = defineMutators({
 	orders: {
@@ -9,26 +10,36 @@ export const mutators = defineMutators({
 				createdAt: Date.now(),
 			})
 		}),
-		createWithId: defineMutator<{ id: string }>(async ({ tx, args }) => {
-			await tx.mutate.orders.insert({
-				id: args.id,
-				createdAt: Date.now(),
-			})
-		}),
+		createWithId: defineMutator(
+			z.object({ id: z.string() }),
+			async ({ tx, args }) => {
+				await tx.mutate.orders.insert({
+					id: args.id,
+					createdAt: Date.now(),
+				})
+			},
+		),
 	},
 	orderItems: {
-		add: defineMutator<
-			{ dishId: number; orderId: string; priceCents: number; orderer: string }
-		>(async ({ tx, args }) => {
-			await tx.mutate.orderItems.insert({
-				id: ulid(),
-				orderer: args.orderer,
-				dishId: args.dishId,
-				orderId: args.orderId,
-				priceCents: args.priceCents,
-			})
-		}),
-		updateOrderer: defineMutator<{ id: string; orderer: string }>(
+		add: defineMutator(
+			z.object({
+				dishId: z.number(),
+				orderId: z.string(),
+				priceCents: z.number(),
+				orderer: z.string(),
+			}),
+			async ({ tx, args }) => {
+				await tx.mutate.orderItems.insert({
+					id: ulid(),
+					orderer: args.orderer,
+					dishId: args.dishId,
+					orderId: args.orderId,
+					priceCents: args.priceCents,
+				})
+			},
+		),
+		updateOrderer: defineMutator(
+			z.object({ id: z.string(), orderer: z.string() }),
 			async ({ tx, args }) => {
 				await tx.mutate.orderItems.update({
 					id: args.id,
@@ -36,10 +47,13 @@ export const mutators = defineMutators({
 				})
 			},
 		),
-		remove: defineMutator<{ id: string }>(async ({ tx, args }) => {
-			await tx.mutate.orderItems.delete({
-				id: args.id,
-			})
-		}),
+		remove: defineMutator(
+			z.object({ id: z.string() }),
+			async ({ tx, args }) => {
+				await tx.mutate.orderItems.delete({
+					id: args.id,
+				})
+			},
+		),
 	},
 })

@@ -3,6 +3,7 @@ import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, ChevronUp, Flame, User } from 'lucide-react'
 
+import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
 import { DishCard } from '#/components/DishCard'
@@ -25,10 +26,10 @@ export const Route = createFileRoute('/train/$orderId')({
 function OrderPage() {
 	const { orderId } = Route.useParams()
 	const zero = useZero()
-	const [dishes] = useQuery(queries.dishes())
-	const [dishGroups] = useQuery(queries.dishGroups())
-	const [orders] = useQuery(queries.orders())
-	const [orderItems] = useQuery(queries.orderItems())
+	const [dishes] = useQuery(queries.dishes.all())
+	const [dishGroups] = useQuery(queries.dishGroups.all())
+	const [orders] = useQuery(queries.orders.all())
+	const [orderItems] = useQuery(queries.orderItems.all())
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
 	const [defaultName, setDefaultName] = useState(getDefaultName)
 
@@ -38,6 +39,10 @@ function OrderPage() {
 			localStorage.setItem(NAME_KEY, name)
 		} catch {}
 	}
+
+	const reversedOrders = [...orders].reverse()
+	const orderIndex = reversedOrders.findIndex((o) => o.id === orderId)
+	const orderNum = orderIndex >= 0 ? reversedOrders.length - orderIndex : null
 
 	const groupMap = new Map(dishGroups.map((g) => [g.id, g.name]))
 	const grouped = dishes.reduce<Map<number, typeof dishes>>((acc, d) => {
@@ -112,8 +117,13 @@ function OrderPage() {
 					</Link>
 					<span className="text-[var(--line)]">/</span>
 					<span className="text-sm font-medium text-[var(--sea-ink)]">
-						Order {orderId.slice(-5)}
+						{orderNum != null ? `Order #${orderNum}` : `Order ${orderId.slice(-5)}`}
 					</span>
+					{order.createdAt != null && (
+						<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">
+							{formatOrderDate(order.createdAt)}
+						</span>
+					)}
 					<div className="ml-auto flex items-center gap-1.5">
 						<User size={14} className="text-[var(--sea-ink-soft)]" />
 						<input

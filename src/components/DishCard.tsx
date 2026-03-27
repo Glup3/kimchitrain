@@ -9,30 +9,30 @@ interface DishCardProps {
 
 export function DishCard({ dish, onAdd }: DishCardProps) {
 	return (
-		<div className="flex items-start justify-between gap-4 py-4">
-			<div className="flex-1 min-w-0">
-				<div className="flex items-baseline gap-2">
+		<div className="py-4">
+			<div className="flex items-center justify-between gap-4">
+				<div className="flex items-center gap-2 min-w-0">
 					<h3 className="text-base font-semibold text-[var(--sea-ink)] leading-tight truncate">
 						{dish.name}
 					</h3>
 					{dish.isPopular && (
-						<Flame size={14} className="text-orange-500 shrink-0 mt-0.5" />
+						<Flame size={14} className="text-orange-500 shrink-0" />
 					)}
 					<span className="text-sm text-[var(--palm)] font-medium tabular-nums shrink-0">
 						€{(dish.priceCents / 100).toFixed(2)}
 					</span>
 				</div>
-				<p className="text-sm text-[var(--sea-ink-soft)] leading-relaxed mt-1 line-clamp-2">
-					{dish.description}
-				</p>
+				<button
+					type="button"
+					onClick={onAdd}
+					className="dish-add-btn shrink-0 w-8 h-8 rounded-full bg-[var(--lagoon)] text-white flex items-center justify-center border-0"
+				>
+					<Plus size={16} strokeWidth={2.5} />
+				</button>
 			</div>
-			<button
-				type="button"
-				onClick={onAdd}
-				className="dish-add-btn shrink-0 w-8 h-8 rounded-full bg-[var(--lagoon)] text-white flex items-center justify-center border-0 mt-0.5"
-			>
-				<Plus size={16} strokeWidth={2.5} />
-			</button>
+			<p className="text-sm text-[var(--sea-ink-soft)] leading-relaxed mt-1 line-clamp-2">
+				{dish.description}
+			</p>
 		</div>
 	)
 }

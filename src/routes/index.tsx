@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
+import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
 
@@ -11,8 +12,8 @@ export const Route = createFileRoute('/')({ component: App })
 function App() {
 	const zero = useZero()
 	const navigate = useNavigate()
-	const [orders] = useQuery(queries.orders())
-	const [orderItems] = useQuery(queries.orderItems())
+	const [orders] = useQuery(queries.orders.all())
+	const [orderItems] = useQuery(queries.orderItems.all())
 
 	async function handleCreateOrder() {
 		const id = ulid()
@@ -45,7 +46,8 @@ function App() {
 					</p>
 				) : (
 					<div className="divide-y divide-[var(--line)]">
-						{[...orders].reverse().map((order) => {
+						{[...orders].reverse().map((order, i) => {
+							const num = orders.length - i
 							const items = orderItems.filter(
 								(item) => item.orderId === order.id,
 							)
@@ -63,7 +65,7 @@ function App() {
 									<div className="flex flex-col gap-0.5">
 										<div className="flex items-center gap-3">
 											<span className="text-base font-medium">
-												Order {order.id.slice(-5)}
+												Order #{num}
 											</span>
 											<span className="text-sm text-[var(--sea-ink-soft)]">
 												{items.length}{' '}
@@ -72,12 +74,7 @@ function App() {
 										</div>
 										{order.createdAt != null && (
 											<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">
-												{new Date(order.createdAt).toLocaleDateString(undefined, {
-													day: 'numeric',
-													month: 'short',
-													hour: '2-digit',
-													minute: '2-digit',
-												})}
+												{formatOrderDate(order.createdAt)}
 											</span>
 										)}
 									</div>
