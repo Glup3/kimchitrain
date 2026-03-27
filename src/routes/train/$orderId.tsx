@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, ChevronUp, Flame, User } from 'lucide-react'
+import { ArrowLeft, Check, ChevronUp, Flame, Link2, User } from 'lucide-react'
 
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
@@ -32,6 +32,14 @@ function OrderPage() {
 	const [orderItems] = useQuery(queries.orderItems.all())
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
 	const [defaultName, setDefaultName] = useState(getDefaultName)
+	const [copied, setCopied] = useState(false)
+
+	const handleCopyLink = useCallback(() => {
+		navigator.clipboard.writeText(window.location.href).then(() => {
+			setCopied(true)
+			setTimeout(() => setCopied(false), 2000)
+		})
+	}, [])
 
 	function saveDefaultName(name: string) {
 		setDefaultName(name)
@@ -125,6 +133,14 @@ function OrderPage() {
 						</span>
 					)}
 					<div className="ml-auto flex items-center gap-1.5">
+						<button
+							type="button"
+							onClick={handleCopyLink}
+							className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-[var(--line)] bg-transparent text-[var(--sea-ink-soft)] cursor-pointer hover:text-[var(--sea-ink)] hover:border-[var(--sea-ink-soft)] transition-colors"
+						>
+							{copied ? <Check size={13} /> : <Link2 size={13} />}
+							{copied ? 'Copied!' : 'Share'}
+						</button>
 						<User size={14} className="text-[var(--sea-ink-soft)]" />
 						<input
 							type="text"
