@@ -36,7 +36,7 @@ function OrdererInput({
 				}
 			}}
 			placeholder="Name…"
-			className="orderer-input flex-1 min-w-0 text-[0.68rem] px-1 py-0.5 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
+			className="orderer-input flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all"
 		/>
 	)
 }
@@ -71,19 +71,19 @@ export function OrderSummary({
 
 	return (
 		<div className="island-shell rounded-xl overflow-hidden">
-			<div className="px-4 py-2.5 border-b border-[var(--line)] flex items-center gap-2">
-				<h2 className="text-sm font-semibold text-[var(--sea-ink)]">
+			<div className="px-5 py-3 border-b border-[var(--line)] flex items-center gap-2">
+				<h2 className="text-base font-semibold text-[var(--sea-ink)]">
 					Order
 				</h2>
 				{items.length > 0 && (
-					<span className="text-[0.65rem] font-bold bg-[var(--lagoon)] text-white rounded-full w-4 h-4 flex items-center justify-center leading-none">
+					<span className="text-xs font-bold bg-[var(--lagoon)] text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
 						{items.length}
 					</span>
 				)}
 			</div>
 
 			{items.length === 0 ? (
-				<p className="px-4 py-6 text-xs text-[var(--sea-ink-soft)] text-center">
+				<p className="px-5 py-8 text-sm text-[var(--sea-ink-soft)] text-center">
 					No items yet
 				</p>
 			) : (
@@ -95,23 +95,23 @@ export function OrderSummary({
 							0,
 						)
 						return (
-							<div key={group.items[0]!.dishId} className="px-4 py-2.5">
-								<div className="flex items-center gap-2">
-									<span className="text-sm font-bold text-[var(--lagoon)] tabular-nums w-5 text-center shrink-0">
+							<div key={group.items[0]!.dishId} className="px-5 py-3">
+								<div className="flex items-center gap-3">
+									<span className="text-lg font-bold text-[var(--lagoon)] tabular-nums w-7 text-center shrink-0">
 										{qty}x
 									</span>
-									<span className="text-xs font-semibold text-[var(--sea-ink)] flex-1 min-w-0 truncate">
+									<span className="text-sm font-semibold text-[var(--sea-ink)] flex-1 min-w-0 truncate">
 										{group.dish?.name ?? 'Unknown'}
 									</span>
-									<span className="text-xs text-[var(--palm)] tabular-nums shrink-0">
+									<span className="text-sm text-[var(--palm)] tabular-nums shrink-0">
 										${(lineTotal / 100).toFixed(2)}
 									</span>
 								</div>
-								<div className="mt-1 ml-5 flex flex-col gap-0.5">
+								<div className="mt-2 ml-7 flex flex-col gap-1">
 									{group.items.map((item) => (
 										<div
 											key={item.id}
-											className="flex items-center gap-1.5"
+											className="flex items-center gap-2"
 										>
 											<OrdererInput
 												value={item.orderer}
@@ -124,9 +124,9 @@ export function OrderSummary({
 												onClick={() =>
 													onRemoveItem(item.id)
 												}
-												className="order-remove-btn shrink-0 w-4 h-4 rounded flex items-center justify-center text-[var(--sea-ink-soft)] border-0 bg-transparent"
+												className="order-remove-btn shrink-0 w-6 h-6 rounded flex items-center justify-center text-[var(--sea-ink-soft)] border-0 bg-transparent"
 											>
-												<Minus size={10} />
+												<Minus size={14} />
 											</button>
 										</div>
 									))}
@@ -138,11 +138,11 @@ export function OrderSummary({
 			)}
 
 			{items.length > 0 && (
-				<div className="px-4 py-2 border-t border-[var(--line)] flex items-center justify-between">
-					<span className="text-xs font-semibold text-[var(--sea-ink)]">
+				<div className="px-5 py-3 border-t border-[var(--line)] flex items-center justify-between">
+					<span className="text-sm font-semibold text-[var(--sea-ink)]">
 						Total
 					</span>
-					<span className="text-sm text-[var(--palm)] font-bold tabular-nums">
+					<span className="text-base text-[var(--palm)] font-bold tabular-nums">
 						${(totalCents / 100).toFixed(2)}
 					</span>
 				</div>

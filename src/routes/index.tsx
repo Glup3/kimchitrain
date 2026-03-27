@@ -23,24 +23,24 @@ function App() {
 	return (
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
-				<div className="page-wrap flex items-center justify-between h-11">
-					<h1 className="display-title text-base font-bold text-[var(--sea-ink)] tracking-tight">
+				<div className="page-wrap flex items-center justify-between h-14">
+					<h1 className="display-title text-lg font-bold text-[var(--sea-ink)] tracking-tight">
 						Kimchi Train
 					</h1>
 					<button
 						type="button"
 						onClick={handleCreateOrder}
-						className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--lagoon)] text-white border-0 cursor-pointer hover:brightness-110"
+						className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg bg-[var(--lagoon)] text-white border-0 cursor-pointer hover:brightness-110"
 					>
-						<Plus size={13} strokeWidth={2.5} />
+						<Plus size={16} strokeWidth={2.5} />
 						New Order
 					</button>
 				</div>
 			</nav>
 
-			<div className="page-wrap py-6">
+			<div className="page-wrap py-8">
 				{orders.length === 0 ? (
-					<p className="text-xs text-[var(--sea-ink-soft)] text-center py-12">
+					<p className="text-sm text-[var(--sea-ink-soft)] text-center py-16">
 						No orders yet
 					</p>
 				) : (
@@ -58,18 +58,18 @@ function App() {
 									key={order.id}
 									to="/train/$orderId"
 									params={{ orderId: order.id }}
-									className="flex items-center justify-between py-3 text-[var(--sea-ink)] no-underline"
+									className="flex items-center justify-between py-4 text-[var(--sea-ink)] no-underline"
 								>
 									<div className="flex items-center gap-3">
-										<span className="text-sm font-medium">
+										<span className="text-base font-medium">
 											Order {order.id.slice(-5)}
 										</span>
-										<span className="text-xs text-[var(--sea-ink-soft)]">
+										<span className="text-sm text-[var(--sea-ink-soft)]">
 											{items.length}{' '}
 											{items.length === 1 ? 'item' : 'items'}
 										</span>
 									</div>
-									<span className="text-xs text-[var(--palm)] font-medium tabular-nums">
+									<span className="text-sm text-[var(--palm)] font-medium tabular-nums">
 										${(totalCents / 100).toFixed(2)}
 									</span>
 								</Link>

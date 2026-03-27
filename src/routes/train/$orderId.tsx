@@ -65,15 +65,15 @@ function OrderPage() {
 
 	if (!order) {
 		return (
-			<div className="page-wrap py-6">
+			<div className="page-wrap py-8">
 				<Link
 					to="/"
-					className="flex items-center gap-1 text-xs text-[var(--lagoon-deep)] no-underline"
+					className="flex items-center gap-1.5 text-sm text-[var(--lagoon-deep)] no-underline"
 				>
-					<ArrowLeft size={13} />
+					<ArrowLeft size={16} />
 					Back to orders
 				</Link>
-				<p className="text-sm text-[var(--sea-ink-soft)] mt-4">
+				<p className="text-base text-[var(--sea-ink-soft)] mt-4">
 					Order not found
 				</p>
 			</div>
@@ -83,27 +83,27 @@ function OrderPage() {
 	return (
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
-				<div className="page-wrap flex items-center gap-3 h-11">
+				<div className="page-wrap flex items-center gap-3 h-14">
 					<Link
 						to="/"
-						className="flex items-center gap-1 text-xs text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
+						className="flex items-center gap-1.5 text-sm text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
 					>
-						<ArrowLeft size={13} />
+						<ArrowLeft size={16} />
 						Orders
 					</Link>
 					<span className="text-[var(--line)]">/</span>
-					<span className="text-xs font-medium text-[var(--sea-ink)]">
+					<span className="text-sm font-medium text-[var(--sea-ink)]">
 						Order {orderId.slice(-5)}
 					</span>
 				</div>
 			</nav>
 
-			<div className="page-wrap py-6 pb-24 lg:pb-6">
-				<div className="flex flex-col lg:flex-row gap-6">
+			<div className="page-wrap py-8 pb-28 lg:pb-8">
+				<div className="flex flex-col lg:flex-row gap-8">
 					<section className="flex-1 min-w-0 self-start">
 						{[...grouped.entries()].map(([groupId, groupDishes]) => (
-							<div key={groupId} className="mb-4">
-								<h2 className="island-kicker mb-1">
+							<div key={groupId} className="mb-6">
+								<h2 className="island-kicker mb-2">
 									{groupMap.get(groupId) ?? 'Other'}
 								</h2>
 								<div className="divide-y divide-[var(--line)]">
@@ -121,8 +121,8 @@ function OrderPage() {
 						))}
 					</section>
 
-					<aside className="hidden lg:block w-72 shrink-0">
-						<div className="sticky top-16">
+					<aside className="hidden lg:block w-80 shrink-0">
+						<div className="sticky top-20">
 							<OrderSummary {...summaryProps} />
 						</div>
 					</aside>
@@ -138,18 +138,18 @@ function OrderPage() {
 						<button
 							type="button"
 							onClick={() => setMobileSheetOpen((v) => !v)}
-							className="w-full flex items-center justify-between px-4 py-2.5 island-shell border-t border-[var(--line)] rounded-none"
+							className="w-full flex items-center justify-between px-5 py-3 island-shell border-t border-[var(--line)] rounded-none"
 						>
-							<span className="text-xs font-medium text-[var(--sea-ink)]">
+							<span className="text-sm font-medium text-[var(--sea-ink)]">
 								{currentOrderItems.length}{' '}
 								{currentOrderItems.length === 1 ? 'item' : 'items'}
 							</span>
-							<div className="flex items-center gap-2">
-								<span className="text-xs font-bold text-[var(--palm)] tabular-nums">
+							<div className="flex items-center gap-3">
+								<span className="text-sm font-bold text-[var(--palm)] tabular-nums">
 									${(totalCents / 100).toFixed(2)}
 								</span>
 								<ChevronUp
-									size={14}
+									size={18}
 									className={`text-[var(--sea-ink-soft)] transition-transform ${mobileSheetOpen ? 'rotate-180' : ''}`}
 								/>
 							</div>
