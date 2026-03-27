@@ -5,6 +5,7 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { schema } from '#/db/zero-schema'
+import { mutators } from '#/lib/mutators'
 
 import appCss from '../styles.css?url'
 
@@ -37,7 +38,8 @@ export const Route = createRootRoute({
 const opts: ZeroOptions = {
 	userID: 'anon',
 	cacheURL: 'http://localhost:4848',
-	schema: schema,
+	schema,
+	mutators,
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {

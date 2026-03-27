@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiQueryRouteImport } from './routes/api.query'
+import { Route as ApiMutateRouteImport } from './routes/api.mutate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const ApiQueryRoute = ApiQueryRouteImport.update({
   path: '/api/query',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMutateRoute = ApiMutateRouteImport.update({
+  id: '/api/mutate',
+  path: '/api/mutate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/query'
+  fullPaths: '/' | '/api/mutate' | '/api/query'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/query'
-  id: '__root__' | '/' | '/api/query'
+  to: '/' | '/api/mutate' | '/api/query'
+  id: '__root__' | '/' | '/api/mutate' | '/api/query'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiMutateRoute: typeof ApiMutateRoute
   ApiQueryRoute: typeof ApiQueryRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mutate': {
+      id: '/api/mutate'
+      path: '/api/mutate'
+      fullPath: '/api/mutate'
+      preLoaderRoute: typeof ApiMutateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiMutateRoute: ApiMutateRoute,
   ApiQueryRoute: ApiQueryRoute,
 }
 export const routeTree = rootRouteImport
