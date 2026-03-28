@@ -5,7 +5,7 @@ services:
       target: migrator
     command: npx drizzle-kit migrate
     environment:
-      - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_D}
+      - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB}
     restart: "no"
 
   app:
