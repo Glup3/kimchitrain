@@ -5,6 +5,7 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { schema } from '#/db/zero-schema'
+import { env } from '#/env'
 import { mutators } from '#/lib/mutators'
 
 import appCss from '../styles.css?url'
@@ -37,7 +38,7 @@ export const Route = createRootRoute({
 
 const opts: ZeroOptions = {
 	userID: 'anon',
-	cacheURL: 'http://localhost:4848',
+	cacheURL: env.VITE_ZERO_SERVER,
 	schema,
 	mutators,
 }

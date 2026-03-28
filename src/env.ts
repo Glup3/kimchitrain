@@ -3,7 +3,6 @@ import { z } from 'zod'
 
 export const env = createEnv({
 	server: {
-		SERVER_URL: z.url().optional(),
 		ZERO_UPSTREAM_DB: z.string(),
 	},
 
@@ -14,7 +13,7 @@ export const env = createEnv({
 	clientPrefix: 'VITE_',
 
 	client: {
-		VITE_APP_TITLE: z.string().min(1).optional(),
+		VITE_ZERO_SERVER: z.string().default('http://localhost:4848'),
 	},
 
 	/**
@@ -22,9 +21,8 @@ export const env = createEnv({
 	 * `process.env` or `import.meta.env`.
 	 */
 	runtimeEnvStrict: {
-		SERVER_URL: process.env.SERVER_URL,
 		ZERO_UPSTREAM_DB: process.env.ZERO_UPSTREAM_DB,
-		VITE_APP_TITLE: import.meta.env.VITE_APP_TITLE,
+		VITE_ZERO_SERVER: import.meta.env.VITE_ZERO_SERVER,
 	},
 
 	/**
