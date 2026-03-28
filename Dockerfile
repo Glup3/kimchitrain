@@ -2,7 +2,7 @@ FROM node:24-slim AS base
 
 ###
 
-FROM base AS prod
+FROM base AS builder
 WORKDIR /app
 COPY package.json package-lock.json /app
 RUN npm ci
@@ -18,7 +18,7 @@ CMD ["npx", "drizzle-kit", "migrate"]
 ###
 
 FROM base AS app
-COPY --from=prod /app/.output /app/.output
+COPY --from=builder /app/.output /app/.output
 EXPOSE 3000
 
 CMD ["node", "/app/.output/server/index.mjs"]
