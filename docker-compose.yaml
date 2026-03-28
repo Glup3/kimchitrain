@@ -12,7 +12,5 @@ services:
     build:
       context: .
       target: app
-    ports:
-      - "3000:3000"
     environment:
       - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB}
