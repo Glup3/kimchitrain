@@ -12,7 +12,12 @@ RUN npm run build
 
 ###
 
-FROM base
+FROM builder AS migrator
+CMD ["npx", "drizzle-kit", "migrate"]
+
+###
+
+FROM base AS app
 COPY --from=prod /app/.output /app/.output
 EXPOSE 3000
 
