@@ -12,9 +12,7 @@ export function AnalyticsSection() {
 
 	if (orders.length === 0) {
 		if (result.type !== 'complete') return null
-		return (
-			<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
-		)
+		return <p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
 	}
 
 	const totalOrders = orders.length

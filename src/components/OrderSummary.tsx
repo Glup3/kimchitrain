@@ -48,7 +48,7 @@ function OrdererInput({
 	)
 }
 
-type EnrichedOrderItem = Readonly<OrderItem> & { readonly dish: Dish | undefined }
+export type EnrichedOrderItem = Readonly<OrderItem> & { readonly dish: Dish | undefined }
 
 interface OrderSummaryProps {
 	items: readonly EnrichedOrderItem[]

@@ -1,7 +1,8 @@
 import type { ZeroOptions } from '@rocicorp/zero'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ArrowLeft } from 'lucide-react'
 import { lazy } from 'react'
 
 import { schema } from '#/db/zero-schema'
@@ -34,6 +35,7 @@ export const Route = createRootRoute({
 		],
 	}),
 	shellComponent: RootDocument,
+	notFoundComponent: NotFound,
 })
 
 const ZeroProvider = lazy(() =>
@@ -47,6 +49,18 @@ const opts: ZeroOptions = {
 	cacheURL: env.VITE_ZERO_SERVER,
 	schema,
 	mutators,
+}
+
+function NotFound() {
+	return (
+		<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
+			<Link to="/" className="flex items-center gap-1.5 text-sm text-(--lagoon-deep) no-underline">
+				<ArrowLeft size={16} />
+				Back to orders
+			</Link>
+			<p className="mt-4 text-base text-(--sea-ink-soft)">Page not found</p>
+		</div>
+	)
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {

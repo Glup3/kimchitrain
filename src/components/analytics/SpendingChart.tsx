@@ -21,7 +21,10 @@ function ChartTooltip({
 }) {
 	if (!active || !payload?.length) return null
 	return (
-		<div className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-xs shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]" style={{ pointerEvents: 'none' }}>
+		<div
+			className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-xs shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]"
+			style={{ pointerEvents: 'none' }}
+		>
 			<p className="font-semibold text-[var(--sea-ink)]">{label}</p>
 			<p className="font-medium text-[var(--palm)]">&euro;{payload[0]!.value?.toFixed(2)}</p>
 		</div>
@@ -30,8 +33,13 @@ function ChartTooltip({
 
 export function SpendingChart({ data }: Props) {
 	return (
-		<div className="rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px] animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both]" style={{ animationDelay: '420ms' }}>
-			<h3 className="mb-5 text-[0.69rem] font-bold uppercase tracking-[0.16em] text-[var(--kicker)]">Spending Over Time</h3>
+		<div
+			className="animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both] rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]"
+			style={{ animationDelay: '420ms' }}
+		>
+			<h3 className="mb-5 text-[0.69rem] font-bold tracking-[0.16em] text-[var(--kicker)] uppercase">
+				Spending Over Time
+			</h3>
 			<ResponsiveContainer width="100%" height={300}>
 				<AreaChart data={data} margin={{ left: 8, right: 16, top: 8, bottom: 0 }}>
 					<defs>
