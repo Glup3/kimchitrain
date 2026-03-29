@@ -1,10 +1,15 @@
 {
-	"version": 1,
-	"skills": {
-		"frontend-design": {
-			"source": "anthropics/skills",
-			"sourceType": "github",
-			"computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    },
+    "react-joyride": {
+      "source": "gilbarbara/react-joyride",
+      "sourceType": "github",
+      "computedHash": "6a28b20c1fc4cc8f6e4ea7d9229a0c7f3dc196e0095c48271c5ebec9dd4ff924"
+    }
+  }
 }
