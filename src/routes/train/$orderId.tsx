@@ -34,18 +34,18 @@ function OrderPage() {
 
 	const { Tour, restartTour } = useOrderTour()
 
-	const order = orderRows[0]
-
-	if (!order && orderResult.type !== 'complete') return null
-
-	if (!order) throw notFound()
-
 	const handleCopyLink = useCallback(() => {
 		navigator.clipboard.writeText(window.location.href).then(() => {
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000)
 		})
 	}, [])
+
+	const order = orderRows[0]
+
+	if (!order && orderResult.type !== 'complete') return null
+
+	if (!order) throw notFound()
 
 	function handleToggleCompleted() {
 		zero.mutate(

@@ -1,5 +1,5 @@
-import { Minus } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Minus, User } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Dish, OrderItem } from '#/db/zero-schema'
 import { cn } from '#/lib/utils'
@@ -128,11 +128,45 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 			)}
 
 			{items.length > 0 && (
+				<PersonBreakdown items={items} />
+			)}
+
+			{items.length > 0 && (
 				<div className="flex items-center justify-between border-t border-[var(--line)] px-5 py-3">
 					<span className="text-sm font-semibold text-[var(--sea-ink)]">Total</span>
 					<span className="text-base font-bold text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
 				</div>
 			)}
+		</div>
+	)
+}
+
+function PersonBreakdown({ items }: { items: readonly EnrichedOrderItem[] }) {
+	const perPerson = useMemo(() => {
+		const map = new Map<string, number>()
+		for (const item of items) {
+			const name = item.orderer.trim() || 'Unassigned'
+			map.set(name, (map.get(name) ?? 0) + item.priceCents)
+		}
+		return [...map.entries()].sort(([a], [b]) => a.localeCompare(b))
+	}, [items])
+
+	if (perPerson.length < 2) return null
+
+	return (
+		<div className="border-t border-[var(--line)] px-5 py-3">
+			<h3 className="mb-2 text-xs font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">Per person</h3>
+			<div className="flex flex-col gap-1.5">
+				{perPerson.map(([name, cents]) => (
+					<div key={name} className="flex items-center justify-between">
+						<span className="flex items-center gap-1.5 text-sm text-[var(--sea-ink)]">
+							<User size={13} className="text-[var(--sea-ink-soft)]" />
+							{name}
+						</span>
+						<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(cents / 100).toFixed(2)}</span>
+					</div>
+				))}
+			</div>
 		</div>
 	)
 }
