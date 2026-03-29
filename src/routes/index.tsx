@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { BarChart3, CheckCircle2, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
+import ThemeToggle from '#/components/ThemeToggle'
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
@@ -18,6 +19,7 @@ function Nav({ onCreateOrder }: { onCreateOrder: () => void }) {
 					Kimchi Train
 				</h1>
 				<div className="flex items-center gap-2">
+					<ThemeToggle />
 					<Link
 						to="/analytics"
 						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
