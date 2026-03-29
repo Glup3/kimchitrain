@@ -1,13 +1,13 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-interface RevenueDataPoint {
+interface SpendingDataPoint {
 	date: string
-	revenue: number
+	spending: number
 	label: string
 }
 
 interface Props {
-	data: RevenueDataPoint[]
+	data: SpendingDataPoint[]
 }
 
 function ChartTooltip({
@@ -21,29 +21,21 @@ function ChartTooltip({
 }) {
 	if (!active || !payload?.length) return null
 	return (
-		<div
-			className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-xs shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]"
-			style={{ pointerEvents: 'none' }}
-		>
+		<div className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-xs shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]" style={{ pointerEvents: 'none' }}>
 			<p className="font-semibold text-[var(--sea-ink)]">{label}</p>
 			<p className="font-medium text-[var(--palm)]">&euro;{payload[0]!.value?.toFixed(2)}</p>
 		</div>
 	)
 }
 
-export function RevenueChart({ data }: Props) {
+export function SpendingChart({ data }: Props) {
 	return (
-		<div
-			className="animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both] rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]"
-			style={{ animationDelay: '420ms' }}
-		>
-			<h3 className="mb-5 text-[0.69rem] font-bold tracking-[0.16em] text-[var(--kicker)] uppercase">
-				Revenue Over Time
-			</h3>
+		<div className="rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px] animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both]" style={{ animationDelay: '420ms' }}>
+			<h3 className="mb-5 text-[0.69rem] font-bold uppercase tracking-[0.16em] text-[var(--kicker)]">Spending Over Time</h3>
 			<ResponsiveContainer width="100%" height={300}>
 				<AreaChart data={data} margin={{ left: 8, right: 16, top: 8, bottom: 0 }}>
 					<defs>
-						<linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+						<linearGradient id="spendingFill" x1="0" y1="0" x2="0" y2="1">
 							<stop offset="0%" stopColor="var(--lagoon)" stopOpacity={0.28} />
 							<stop offset="100%" stopColor="var(--lagoon)" stopOpacity={0.02} />
 						</linearGradient>
@@ -64,10 +56,10 @@ export function RevenueChart({ data }: Props) {
 					<Tooltip content={<ChartTooltip />} />
 					<Area
 						type="monotone"
-						dataKey="revenue"
+						dataKey="spending"
 						stroke="var(--lagoon)"
 						strokeWidth={2.5}
-						fill="url(#revenueFill)"
+						fill="url(#spendingFill)"
 						dot={{ r: 3.5, fill: 'var(--lagoon)', stroke: 'var(--surface-strong)', strokeWidth: 2 }}
 						activeDot={{ r: 5, fill: 'var(--lagoon)', stroke: 'var(--surface-strong)', strokeWidth: 2 }}
 					/>

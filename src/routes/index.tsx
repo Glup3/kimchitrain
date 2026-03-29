@@ -13,8 +13,7 @@ export const Route = createFileRoute('/')({ component: App })
 function App() {
 	const zero = useZero()
 	const navigate = useNavigate()
-	const [orders] = useQuery(queries.orders.all())
-	const [orderItems] = useQuery(queries.orderItems.all())
+	const [orders] = useQuery(queries.orders.withItems())
 
 	async function handleCreateOrder() {
 		const id = ulid()
@@ -54,10 +53,8 @@ function App() {
 					<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
 				) : (
 					<div className="divide-y divide-[var(--line)]">
-						{[...orders].reverse().map((order, i) => {
-							const num = orders.length - i
-							const items = orderItems.filter((item) => item.orderId === order.id)
-							const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
+						{[...orders].reverse().map((order) => {
+							const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
 							return (
 								<Link
 									key={order.id}
@@ -76,7 +73,7 @@ function App() {
 													order.completed && 'text-[var(--sea-ink-soft)] line-through',
 												)}
 											>
-												Order #{num}
+												Order {order.id.slice(-8)}
 											</span>
 											{order.completed && (
 												<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
@@ -86,7 +83,7 @@ function App() {
 											)}
 											{!order.completed && (
 												<span className="text-sm text-[var(--sea-ink-soft)]">
-													{items.length} {items.length === 1 ? 'item' : 'items'}
+													{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
 												</span>
 											)}
 										</div>

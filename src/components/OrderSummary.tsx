@@ -48,22 +48,22 @@ function OrdererInput({
 	)
 }
 
+type EnrichedOrderItem = Readonly<OrderItem> & { readonly dish: Dish | undefined }
+
 interface OrderSummaryProps {
-	items: OrderItem[]
-	dishes: Dish[]
+	items: readonly EnrichedOrderItem[]
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
 	readOnly?: boolean
 }
 
-export function OrderSummary({ items, dishes, onRemoveItem, onUpdateOrderer, readOnly }: OrderSummaryProps) {
-	const dishMap = new Map(dishes.map((d) => [d.id, d]))
+export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }: OrderSummaryProps) {
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
 
-	const grouped = items.reduce<Map<number, { dish: Dish | undefined; items: OrderItem[] }>>((acc, item) => {
+	const grouped = items.reduce<Map<number, { dish: Dish | undefined; items: EnrichedOrderItem[] }>>((acc, item) => {
 		const group = acc.get(item.dishId) ?? {
-			dish: dishMap.get(item.dishId),
-			items: [],
+			dish: item.dish,
+			items: [] as EnrichedOrderItem[],
 		}
 		group.items.push(item)
 		acc.set(item.dishId, group)

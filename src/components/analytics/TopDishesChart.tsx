@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 interface TopDishData {
 	name: string
 	count: number
-	revenue: number
+	cost: number
 }
 
 interface Props {
@@ -20,7 +20,7 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{
 		>
 			<p className="font-semibold text-[var(--sea-ink)]">{d.name}</p>
 			<p className="text-[var(--sea-ink-soft)]">
-				{d.count} order{d.count !== 1 ? 's' : ''} &middot; &euro;{(d.revenue / 100).toFixed(2)}
+				{d.count} order{d.count !== 1 ? 's' : ''} &middot; &euro;{(d.cost / 100).toFixed(2)}
 			</p>
 		</div>
 	)

@@ -1,26 +1,26 @@
-import { CheckCircle2, Coins, Receipt, TrendingUp } from 'lucide-react'
+import { Coins, Receipt, ShoppingBag, TrendingUp } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 interface SummaryCardsProps {
 	totalOrders: number
-	totalRevenueCents: number
+	totalSpendingCents: number
 	avgOrderCents: number
-	completionRate: number
+	totalItems: number
 }
 
 const CARDS: { label: string; icon: LucideIcon; accent: string }[] = [
 	{ label: 'Total Orders', icon: Receipt, accent: 'var(--lagoon)' },
-	{ label: 'Revenue', icon: Coins, accent: 'var(--palm)' },
+	{ label: 'Total Spent', icon: Coins, accent: 'var(--palm)' },
 	{ label: 'Avg. Order', icon: TrendingUp, accent: 'var(--lagoon-deep)' },
-	{ label: 'Completed', icon: CheckCircle2, accent: 'var(--palm)' },
+	{ label: 'Items Ordered', icon: ShoppingBag, accent: 'var(--palm)' },
 ]
 
-export function SummaryCards({ totalOrders, totalRevenueCents, avgOrderCents, completionRate }: SummaryCardsProps) {
+export function SummaryCards({ totalOrders, totalSpendingCents, avgOrderCents, totalItems }: SummaryCardsProps) {
 	const values = [
 		totalOrders.toLocaleString(),
-		`€${(totalRevenueCents / 100).toFixed(2)}`,
+		`€${(totalSpendingCents / 100).toFixed(2)}`,
 		`€${(avgOrderCents / 100).toFixed(2)}`,
-		`${Math.round(completionRate)}%`,
+		totalItems.toLocaleString(),
 	]
 
 	return (

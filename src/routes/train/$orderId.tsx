@@ -28,10 +28,8 @@ export const Route = createFileRoute('/train/$orderId')({
 function OrderPage() {
 	const { orderId } = Route.useParams()
 	const zero = useZero()
-	const [dishes] = useQuery(queries.dishes.all())
-	const [dishGroups] = useQuery(queries.dishGroups.all())
-	const [orders] = useQuery(queries.orders.all())
-	const [orderItems] = useQuery(queries.orderItems.all())
+	const [dishesWithGroup] = useQuery(queries.dishes.withGroup())
+	const [orderRows] = useQuery(queries.orders.byIdWithItemsAndDishes(orderId))
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
 	const [defaultName, setDefaultName] = useState(getDefaultName)
 	const [copied, setCopied] = useState(false)
@@ -66,21 +64,16 @@ function OrderPage() {
 		} catch {}
 	}
 
-	const reversedOrders = [...orders].reverse()
-	const orderIndex = reversedOrders.findIndex((o) => o.id === orderId)
-	const orderNum = orderIndex >= 0 ? reversedOrders.length - orderIndex : null
-
-	const groupMap = new Map(dishGroups.map((g) => [g.id, g.name]))
-	const grouped = dishes.reduce<Map<number, typeof dishes>>((acc, d) => {
+	const grouped = dishesWithGroup.reduce<Map<number, typeof dishesWithGroup>>((acc, d) => {
 		const list = acc.get(d.groupId) ?? []
 		list.push(d)
 		acc.set(d.groupId, list)
 		return acc
 	}, new Map())
 
-	const order = orders.find((o) => o.id === orderId)
+	const order = orderRows[0]
 	const isCompleted = order?.completed ?? false
-	const currentOrderItems = orderItems.filter((item) => item.orderId === orderId)
+	const currentOrderItems = order?.items ?? []
 	const totalCents = currentOrderItems.reduce((sum, item) => sum + item.priceCents, 0)
 
 	function handleAddDish(dishId: number, priceCents: number) {
@@ -104,7 +97,6 @@ function OrderPage() {
 
 	const summaryProps = {
 		items: currentOrderItems,
-		dishes,
 		onRemoveItem: handleRemoveItem,
 		onUpdateOrderer: handleUpdateOrderer,
 		readOnly: isCompleted,
@@ -136,7 +128,7 @@ function OrderPage() {
 					</Link>
 					<span className="text-(--line)">/</span>
 					<span className="text-sm font-medium text-(--sea-ink)">
-						{orderNum != null ? `Order #${orderNum}` : `Order ${orderId.slice(-5)}`}
+						Order {orderId.slice(-8)}
 					</span>
 					{order.createdAt != null && (
 						<span className="text-xs text-(--sea-ink-soft) opacity-60">{formatOrderDate(order.createdAt)}</span>
@@ -197,7 +189,7 @@ function OrderPage() {
 						{[...grouped.entries()].map(([groupId, groupDishes]) => (
 							<div key={groupId} className="mb-6" data-tour={`dish-menu-${groupId}`}>
 								<h2 className="mb-2 text-[0.69rem] font-bold tracking-[0.16em] text-(--kicker) uppercase">
-									{groupMap.get(groupId) ?? 'Other'}
+									{groupDishes[0]?.group?.name ?? 'Other'}
 								</h2>
 								<div className="divide-y divide-(--line)">
 									{groupDishes.map((dish) => (
