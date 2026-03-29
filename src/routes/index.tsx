@@ -1,13 +1,12 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { BarChart3, CheckCircle2, Clock, Plus } from 'lucide-react'
+import { Archive, BarChart3, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
+import OrderRow from '#/components/OrderRow'
 import ThemeToggle from '#/components/ThemeToggle'
-import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
-import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -20,6 +19,13 @@ function Nav({ onCreateOrder }: { onCreateOrder: () => void }) {
 				</h1>
 				<div className="flex items-center gap-2">
 					<ThemeToggle />
+					<Link
+						to="/archive"
+						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
+					>
+						<Archive size={16} strokeWidth={2.5} />
+						Archive
+					</Link>
 					<Link
 						to="/analytics"
 						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
@@ -43,55 +49,6 @@ function Nav({ onCreateOrder }: { onCreateOrder: () => void }) {
 
 function PageLayout({ children }: { children?: React.ReactNode }) {
 	return <div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">{children}</div>
-}
-
-function OrderRow({
-	order,
-}: {
-	order: {
-		id: string
-		completed: boolean
-		createdAt: number | null
-		items: readonly { priceCents: number; orderer: string }[]
-	}
-}) {
-	const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
-	const orderers = [...new Set(order.items.map((item) => item.orderer))]
-	return (
-		<Link
-			to="/train/$orderId"
-			params={{ orderId: order.id }}
-			className={cn(
-				'flex items-center justify-between py-4 no-underline',
-				order.completed ? 'opacity-60' : 'text-[var(--sea-ink)]',
-			)}
-		>
-			<div className="flex flex-col gap-0.5">
-				<div className="flex items-center gap-3">
-					<span className={cn('text-base font-medium', order.completed && 'text-[var(--sea-ink-soft)] line-through')}>
-						Order {order.id.slice(-8)}
-					</span>
-					{order.completed && (
-						<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
-							<CheckCircle2 size={12} />
-							Done
-						</span>
-					)}
-					{!order.completed && (
-						<span className="flex items-center gap-1 text-sm text-[var(--sea-ink-soft)]">
-							<Clock size={12} />
-							{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
-						</span>
-					)}
-				</div>
-				{order.createdAt != null && (
-					<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">{formatOrderDate(order.createdAt)}</span>
-				)}
-				{orderers.length > 0 && <span className="text-xs text-[var(--sea-ink-soft)]">{orderers.join(', ')}</span>}
-			</div>
-			<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
-		</Link>
-	)
 }
 
 function App() {
@@ -157,6 +114,12 @@ function App() {
 								<OrderRow key={order.id} order={order} />
 							))}
 						</div>
+						<Link
+							to="/archive"
+							className="mt-2 block text-center text-sm font-medium text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
+						>
+							View all completed orders
+						</Link>
 					</section>
 				)}
 			</PageLayout>
