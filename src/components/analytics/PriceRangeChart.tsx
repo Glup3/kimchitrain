@@ -9,7 +9,15 @@ interface Props {
 	data: PriceData[]
 }
 
-function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: string }) {
+function ChartTooltip({
+	active,
+	payload,
+	label,
+}: {
+	active?: boolean
+	payload?: Array<{ value?: number }>
+	label?: string
+}) {
 	if (!active || !payload?.length) return null
 	return (
 		<div
@@ -36,12 +44,7 @@ export function PriceRangeChart({ data }: Props) {
 			<ResponsiveContainer width="100%" height={300}>
 				<BarChart data={data} margin={{ left: 8, right: 16, top: 8, bottom: 0 }}>
 					<CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
-					<XAxis
-						dataKey="range"
-						tick={{ fontSize: 11, fill: 'var(--sea-ink)' }}
-						axisLine={false}
-						tickLine={false}
-					/>
+					<XAxis dataKey="range" tick={{ fontSize: 11, fill: 'var(--sea-ink)' }} axisLine={false} tickLine={false} />
 					<YAxis
 						tick={{ fontSize: 11, fill: 'var(--sea-ink-soft)' }}
 						axisLine={false}

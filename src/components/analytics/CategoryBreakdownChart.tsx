@@ -9,14 +9,7 @@ interface Props {
 	data: CategoryData[]
 }
 
-const COLORS = [
-	'var(--lagoon)',
-	'var(--palm)',
-	'var(--lagoon-deep)',
-	'#e8924a',
-	'#c74375',
-	'#7c6fcd',
-]
+const COLORS = ['var(--lagoon)', 'var(--palm)', 'var(--lagoon-deep)', '#e8924a', '#c74375', '#7c6fcd']
 
 function ChartTooltip({
 	active,
@@ -64,7 +57,13 @@ export function CategoryBreakdownChart({ data }: Props) {
 							const x = cx + (or + 18) * Math.cos(-angle * RAD)
 							const y = cy + (or + 18) * Math.sin(-angle * RAD)
 							return (
-								<text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-[11px] fill-[var(--sea-ink)]">
+								<text
+									x={x}
+									y={y}
+									textAnchor={x > cx ? 'start' : 'end'}
+									dominantBaseline="central"
+									className="fill-[var(--sea-ink)] text-[11px]"
+								>
 									{name} · €{(value / 100).toFixed(2)}
 								</text>
 							)

@@ -9,7 +9,15 @@ interface Props {
 	data: SizeData[]
 }
 
-function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: string }) {
+function ChartTooltip({
+	active,
+	payload,
+	label,
+}: {
+	active?: boolean
+	payload?: Array<{ value?: number }>
+	label?: string
+}) {
 	if (!active || !payload?.length) return null
 	return (
 		<div
@@ -41,7 +49,13 @@ export function OrderSizeChart({ data }: Props) {
 						tick={{ fontSize: 12, fill: 'var(--sea-ink)' }}
 						axisLine={false}
 						tickLine={false}
-						label={{ value: 'items per order', position: 'insideBottomRight', offset: -8, fontSize: 10, fill: 'var(--sea-ink-soft)' }}
+						label={{
+							value: 'items per order',
+							position: 'insideBottomRight',
+							offset: -8,
+							fontSize: 10,
+							fill: 'var(--sea-ink-soft)',
+						}}
 					/>
 					<YAxis
 						tick={{ fontSize: 11, fill: 'var(--sea-ink-soft)' }}
