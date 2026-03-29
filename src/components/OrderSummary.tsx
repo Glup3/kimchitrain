@@ -41,7 +41,7 @@ function OrdererInput({
 			placeholder="Name…"
 			disabled={readOnly}
 			className={cn(
-				'flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all placeholder:opacity-50 placeholder:text-[var(--sea-ink-soft)] focus:border-[var(--lagoon)] focus:shadow-[0_0_0_2px_rgba(79,184,178,0.18)]',
+				'flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all placeholder:opacity-50 placeholder:text-[var(--sea-ink-soft)] focus:border-[var(--lagoon)] focus:shadow-[0_0_0_2px_rgba(220,38,38,0.15)]',
 				readOnly && 'opacity-60 cursor-default border-transparent',
 			)}
 		/>

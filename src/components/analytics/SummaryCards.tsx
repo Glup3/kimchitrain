@@ -47,7 +47,7 @@ export function SummaryCards({ totalOrders, totalRevenueCents, avgOrderCents, co
 								</div>
 								<span className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[var(--kicker)]">{card.label}</span>
 							</div>
-							<div className="font-['Fraunces',Georgia,serif] text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: card.accent }}>
+							<div className="font-['Syne',sans-serif] text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: card.accent }}>
 								{values[i]}
 							</div>
 						</div>

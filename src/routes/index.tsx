@@ -27,7 +27,7 @@ function App() {
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
 				<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center justify-between">
-					<h1 className="font-['Fraunces',Georgia,serif] text-lg font-bold tracking-tight text-[var(--sea-ink)]">Kimchi Train</h1>
+					<h1 className="font-['Syne',sans-serif] text-lg font-bold tracking-tight text-[var(--sea-ink)]">Kimchi Train</h1>
 					<button
 						type="button"
 						onClick={handleCreateOrder}
