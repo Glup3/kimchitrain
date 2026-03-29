@@ -11,7 +11,7 @@ description: >-
 license: MIT
 metadata:
   author: gilbarbara
-  version: "3.0.0"
+  version: '3.0.0'
 ---
 
 # React Joyride v3
@@ -25,48 +25,53 @@ Online docs: https://v3.react-joyride.com
 ### Using the hook (recommended)
 
 ```tsx
-import { useJoyride, STATUS, Status } from 'react-joyride';
+import { useJoyride, STATUS, Status } from 'react-joyride'
 
 function App() {
-  const { Tour } = useJoyride({
-    continuous: true,
-    run: true,
-    steps: [
-      { target: '.my-element', content: 'This is the first step', title: 'Welcome' },
-      { target: '#sidebar', content: 'Navigate here', placement: 'right' },
-    ],
-    onEvent: (data) => {
-      if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
-        // Tour ended
-      }
-    },
-  });
+	const { Tour } = useJoyride({
+		continuous: true,
+		run: true,
+		steps: [
+			{ target: '.my-element', content: 'This is the first step', title: 'Welcome' },
+			{ target: '#sidebar', content: 'Navigate here', placement: 'right' },
+		],
+		onEvent: (data) => {
+			if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
+				// Tour ended
+			}
+		},
+	})
 
-  return <div>{Tour}{/* rest of app */}</div>;
+	return (
+		<div>
+			{Tour}
+			{/* rest of app */}
+		</div>
+	)
 }
 ```
 
 ### Using the component
 
 ```tsx
-import { Joyride, STATUS, Status } from 'react-joyride';
+import { Joyride, STATUS, Status } from 'react-joyride'
 
 function App() {
-  return (
-    <Joyride
-      continuous
-      run={true}
-      steps={[
-        { target: '.my-element', content: 'First step' },
-        { target: '#sidebar', content: 'Second step' },
-      ]}
-      onEvent={(data) => {
-        if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
-          // Tour ended
-        }
-      }}
-    />
-  );
+	return (
+		<Joyride
+			continuous
+			run={true}
+			steps={[
+				{ target: '.my-element', content: 'First step' },
+				{ target: '#sidebar', content: 'Second step' },
+			]}
+			onEvent={(data) => {
+				if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
+					// Tour ended
+				}
+			}}
+		/>
+	)
 }
 ```
 
@@ -79,6 +84,7 @@ Docs: https://v3.react-joyride.com/docs/getting-started
 The tour has two state dimensions:
 
 **Tour Status**: `idle -> ready -> waiting -> running <-> paused -> finished | skipped`
+
 - `idle`: No steps loaded
 - `ready`: Steps loaded, waiting for `run: true`
 - `waiting`: `run=true` but steps loading async (transitions to running when steps arrive)
@@ -87,6 +93,7 @@ The tour has two state dimensions:
 - `finished` / `skipped`: Tour ended
 
 **Step Lifecycle** (per step): `init -> ready -> beacon_before -> beacon -> tooltip_before -> tooltip -> complete`
+
 - `*_before` phases: scrolling and positioning happen here
 - `beacon`: Pulsing indicator shown (skipped when `continuous` + navigating, `skipBeacon`, or `placement: 'center'`)
 - `tooltip`: The tooltip is visible and interactive
@@ -112,33 +119,41 @@ Each step requires `target` and `content`. All other fields are optional.
 
 ```tsx
 // CSS selector
-{ target: '.sidebar-nav' }
+{
+	target: '.sidebar-nav'
+}
 // HTMLElement
-{ target: document.getElementById('my-el') }
+{
+	target: document.getElementById('my-el')
+}
 // React ref
-const ref = useRef(null);
-{ target: ref }
+const ref = useRef(null)
+{
+	target: ref
+}
 // Function (evaluated each lifecycle)
-{ target: () => document.querySelector('.dynamic-element') }
+{
+	target: () => document.querySelector('.dynamic-element')
+}
 ```
 
 ### Common step options (override per-step)
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `placement` | `'bottom'` | Tooltip position. Use `'center'` for modal-style (requires `target: 'body'`) |
-| `skipBeacon` | `false` | Skip beacon, show tooltip directly |
-| `buttons` | `['back','close','primary']` | Buttons in tooltip. Add `'skip'` for skip button |
-| `hideOverlay` | `false` | Don't show dark overlay |
-| `blockTargetInteraction` | `false` | Block clicks on highlighted element |
-| `before` | - | `(data) => Promise<void>` — async hook before step shows |
-| `after` | - | `(data) => void` — fire-and-forget hook after step completes |
-| `skipScroll` | `false` | Don't scroll to target |
-| `scrollTarget` | - | Scroll to this element instead of `target` |
-| `spotlightTarget` | - | Highlight this element instead of `target` |
-| `spotlightPadding` | `10` | Padding around spotlight. Number or `{ top, right, bottom, left }` |
-| `targetWaitTimeout` | `1000` | ms to wait for target to appear. `0` = no waiting |
-| `beforeTimeout` | `5000` | ms to wait for `before` hook. `0` = no timeout |
+| Option                   | Default                      | Description                                                                  |
+| ------------------------ | ---------------------------- | ---------------------------------------------------------------------------- |
+| `placement`              | `'bottom'`                   | Tooltip position. Use `'center'` for modal-style (requires `target: 'body'`) |
+| `skipBeacon`             | `false`                      | Skip beacon, show tooltip directly                                           |
+| `buttons`                | `['back','close','primary']` | Buttons in tooltip. Add `'skip'` for skip button                             |
+| `hideOverlay`            | `false`                      | Don't show dark overlay                                                      |
+| `blockTargetInteraction` | `false`                      | Block clicks on highlighted element                                          |
+| `before`                 | -                            | `(data) => Promise<void>` — async hook before step shows                     |
+| `after`                  | -                            | `(data) => void` — fire-and-forget hook after step completes                 |
+| `skipScroll`             | `false`                      | Don't scroll to target                                                       |
+| `scrollTarget`           | -                            | Scroll to this element instead of `target`                                   |
+| `spotlightTarget`        | -                            | Highlight this element instead of `target`                                   |
+| `spotlightPadding`       | `10`                         | Padding around spotlight. Number or `{ top, right, bottom, left }`           |
+| `targetWaitTimeout`      | `1000`                       | ms to wait for target to appear. `0` = no waiting                            |
+| `beforeTimeout`          | `5000`                       | ms to wait for `before` hook. `0` = no timeout                               |
 
 All `Options` fields can be set globally via `options` prop or per-step. Per-step values override global.
 
@@ -154,28 +169,28 @@ The tour manages step navigation internally. This is the right choice for most u
 
 ```tsx
 const { Tour } = useJoyride({
-  continuous: true,
-  run: isRunning,
-  steps: [
-    { target: '.nav', content: 'Navigation' },
-    {
-      target: '.dropdown-item',
-      content: 'Inside the dropdown',
-      before: () => {
-        // Open dropdown and wait for animation — tour waits automatically
-        openDropdown();
-        return new Promise(resolve => setTimeout(resolve, 300));
-      },
-      after: () => closeDropdown(), // Clean up after step (fire-and-forget)
-    },
-    { target: '.main-content', content: 'Main content' },
-  ],
-  onEvent: (data) => {
-    if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
-      setIsRunning(false);
-    }
-  },
-});
+	continuous: true,
+	run: isRunning,
+	steps: [
+		{ target: '.nav', content: 'Navigation' },
+		{
+			target: '.dropdown-item',
+			content: 'Inside the dropdown',
+			before: () => {
+				// Open dropdown and wait for animation — tour waits automatically
+				openDropdown()
+				return new Promise((resolve) => setTimeout(resolve, 300))
+			},
+			after: () => closeDropdown(), // Clean up after step (fire-and-forget)
+		},
+		{ target: '.main-content', content: 'Main content' },
+	],
+	onEvent: (data) => {
+		if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(data.status)) {
+			setIsRunning(false)
+		}
+	},
+})
 ```
 
 ### Controlled (with `stepIndex`) — use sparingly
@@ -183,30 +198,31 @@ const { Tour } = useJoyride({
 Only use controlled mode when the parent genuinely needs to manage the step index externally (e.g., syncing with URL params, external state machines, or complex multi-component coordination that `before`/`after` hooks can't handle).
 
 ```tsx
-const [stepIndex, setStepIndex] = useState(0);
-const [run, setRun] = useState(true);
+const [stepIndex, setStepIndex] = useState(0)
+const [run, setRun] = useState(true)
 
 const { Tour } = useJoyride({
-  continuous: true,
-  run,
-  stepIndex,  // This makes it controlled
-  steps,
-  onEvent: (data) => {
-    const { action, index, status, type } = data;
+	continuous: true,
+	run,
+	stepIndex, // This makes it controlled
+	steps,
+	onEvent: (data) => {
+		const { action, index, status, type } = data
 
-    if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(status)) {
-      setRun(false);
-      return;
-    }
+		if (([STATUS.FINISHED, STATUS.SKIPPED] as Status).includes(status)) {
+			setRun(false)
+			return
+		}
 
-    if (type === 'step:after' || type === 'error:target_not_found') {
-      setStepIndex(index + (action === 'prev' ? -1 : 1));
-    }
-  },
-});
+		if (type === 'step:after' || type === 'error:target_not_found') {
+			setStepIndex(index + (action === 'prev' ? -1 : 1))
+		}
+	},
+})
 ```
 
 **Controlled mode rules:**
+
 - `go()` and `reset()` are disabled (logged warning)
 - You must update `stepIndex` in response to events
 - The tour pauses at COMPLETE — you must advance it
@@ -224,21 +240,21 @@ The `data` object contains the full tour state plus event-specific fields. The `
 
 ### Event types (in order per step)
 
-| Event | When |
-|-------|------|
-| `tour:start` | Tour begins |
-| `step:before_hook` | `before` hook is called |
-| `step:before` | Target found, step about to render |
-| `scroll:start` | Scrolling to target |
-| `scroll:end` | Scroll complete |
-| `beacon` | Beacon shown |
-| `tooltip` | Tooltip shown |
-| `step:after` | User navigated (next/prev/close/skip) |
-| `step:after_hook` | `after` hook called |
-| `tour:end` | Tour finished or skipped |
-| `tour:status` | Status changed (on stop/reset) |
-| `error:target_not_found` | Target element not found |
-| `error` | Generic error |
+| Event                    | When                                  |
+| ------------------------ | ------------------------------------- |
+| `tour:start`             | Tour begins                           |
+| `step:before_hook`       | `before` hook is called               |
+| `step:before`            | Target found, step about to render    |
+| `scroll:start`           | Scrolling to target                   |
+| `scroll:end`             | Scroll complete                       |
+| `beacon`                 | Beacon shown                          |
+| `tooltip`                | Tooltip shown                         |
+| `step:after`             | User navigated (next/prev/close/skip) |
+| `step:after_hook`        | `after` hook called                   |
+| `tour:end`               | Tour finished or skipped              |
+| `tour:status`            | Status changed (on stop/reset)        |
+| `error:target_not_found` | Target element not found              |
+| `error`                  | Generic error                         |
 
 ### Event subscription with `on()`
 
@@ -259,18 +275,18 @@ Docs: https://v3.react-joyride.com/docs/events
 
 Available via `useJoyride()` return value or `onEvent` second argument:
 
-| Method | Description |
-|--------|-------------|
-| `next()` | Advance to next step |
-| `prev()` | Go to previous step |
-| `close(origin?)` | Close current step, advance |
-| `skip(origin?)` | Skip the tour entirely |
-| `start(index?)` | Start the tour |
-| `stop(advance?)` | Stop (pause) the tour |
-| `go(index)` | Jump to step (uncontrolled only) |
-| `reset(restart?)` | Reset tour (uncontrolled only) |
-| `open()` | Open tooltip for current step |
-| `info()` | Get current state |
+| Method            | Description                      |
+| ----------------- | -------------------------------- |
+| `next()`          | Advance to next step             |
+| `prev()`          | Go to previous step              |
+| `close(origin?)`  | Close current step, advance      |
+| `skip(origin?)`   | Skip the tour entirely           |
+| `start(index?)`   | Start the tour                   |
+| `stop(advance?)`  | Stop (pause) the tour            |
+| `go(index)`       | Jump to step (uncontrolled only) |
+| `reset(restart?)` | Reset tour (uncontrolled only)   |
+| `open()`          | Open tooltip for current step    |
+| `info()`          | Get current state                |
 
 Docs: https://v3.react-joyride.com/docs/hook
 
@@ -353,13 +369,13 @@ Docs: https://v3.react-joyride.com/docs/custom-components
 
 ## Problem → Solution Guide
 
-| I need to... | Use |
-|---|---|
-| Wait for async UI changes between steps (dropdown, animation, data load) | `before` hook returning a Promise — not controlled mode |
-| Control step navigation externally (URL sync, external state machine) | Controlled mode with `stepIndex` — but try `before`/`after` hooks first |
-| Track which steps failed (target missing, hook error) | `failures` array from `useJoyride()` return |
-| Listen to specific events without `onEvent` switch | `on('event:type', handler)` from `useJoyride()` return |
-| Show a centered modal-style step | `target: 'body'` + `placement: 'center'` |
+| I need to...                                                             | Use                                                                     |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| Wait for async UI changes between steps (dropdown, animation, data load) | `before` hook returning a Promise — not controlled mode                 |
+| Control step navigation externally (URL sync, external state machine)    | Controlled mode with `stepIndex` — but try `before`/`after` hooks first |
+| Track which steps failed (target missing, hook error)                    | `failures` array from `useJoyride()` return                             |
+| Listen to specific events without `onEvent` switch                       | `on('event:type', handler)` from `useJoyride()` return                  |
+| Show a centered modal-style step                                         | `target: 'body'` + `placement: 'center'`                                |
 
 ## Common Gotchas & Debugging
 
@@ -376,11 +392,13 @@ useJoyride({ debug: true, ... })
 The console output shows exactly which lifecycle phase the tour reaches, what actions are firing, and where it gets stuck.
 
 ### Tour not starting
+
 - Check `run={true}` is set
 - Verify `steps` array is not empty and steps have valid `target` + `content`
 - For SSR: use `<Joyride>` component (auto-guards DOM access) or check `typeof window !== 'undefined'`
 
 ### Target not found
+
 - Test selector in console: `document.querySelector('.your-selector')`
 - Element must be visible (not `display: none`, `visibility: hidden`, or zero dimensions)
 - If element mounts later, increase `targetWaitTimeout` (default: 1000ms)
@@ -388,12 +406,14 @@ The console output shows exactly which lifecycle phase the tour reaches, what ac
 - In uncontrolled mode, missing targets auto-advance; in controlled mode, handle `error:target_not_found` event
 
 ### Tooltip never appears / overlay flashes
+
 - Add `debug: true` and check the console to see which lifecycle phase is reached
 - Verify the target element is in the viewport or scrollable
 - Check for CSS `overflow: hidden` on ancestors clipping the target
 - If using portals or modals, the target may not be accessible
 
 ### Controlled mode stuck
+
 - First question: do you actually need controlled mode? Most async needs are solved with `before`/`after` hooks in uncontrolled mode
 - If controlled: you MUST update `stepIndex` in your `onEvent` handler when `type === 'step:after'`
 - Handle both forward (`action !== 'prev'`) and backward (`action === 'prev'`) navigation
@@ -401,17 +421,20 @@ The console output shows exactly which lifecycle phase the tour reaches, what ac
 - `go()` and `reset()` don't work in controlled mode
 
 ### Before hook timeout
+
 - Default `beforeTimeout` is 5000ms — increase if your async operation takes longer
 - Set `beforeTimeout: 0` for no timeout
 - The loader appears after `loaderDelay` (300ms) while waiting
 
 ### Scroll issues
+
 - Use `scrollTarget` to scroll to a different element than the tooltip target
 - Adjust `scrollOffset` (default: 20px) for headers or fixed elements
 - Set `skipScroll: true` to disable auto-scrolling for a step
 - `scrollToFirstStep: false` by default — set to `true` if first step is off-screen
 
 ### Center placement
+
 - Use `placement: 'center'` with `target: 'body'` for modal-style centered tooltips
 - Center placement automatically hides the beacon and arrow
 
@@ -419,13 +442,13 @@ The console output shows exactly which lifecycle phase the tour reaches, what ac
 
 ```tsx
 // Named exports only (no default export in v3)
-import { Joyride, useJoyride } from 'react-joyride';
+import { Joyride, useJoyride } from 'react-joyride'
 
 // Constants for type-safe comparisons
-import { ACTIONS, EVENTS, LIFECYCLE, ORIGIN, STATUS } from 'react-joyride';
+import { ACTIONS, EVENTS, LIFECYCLE, ORIGIN, STATUS } from 'react-joyride'
 
 // Types
-import type { Step, Props, EventData, Controls, TooltipRenderProps } from 'react-joyride';
+import type { Step, Props, EventData, Controls, TooltipRenderProps } from 'react-joyride'
 ```
 
 Docs: https://v3.react-joyride.com/docs/exports

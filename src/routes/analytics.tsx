@@ -10,7 +10,10 @@ function AnalyticsPage() {
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
 				<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center justify-between">
-					<Link to="/" className="flex items-center gap-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:text-[var(--lagoon)]">
+					<Link
+						to="/"
+						className="flex items-center gap-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:text-[var(--lagoon)]"
+					>
 						<ArrowLeft size={16} />
 						Back to Orders
 					</Link>

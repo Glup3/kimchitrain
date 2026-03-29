@@ -113,7 +113,7 @@ export function OrderSummary({ items, dishes, onRemoveItem, onUpdateOrderer, rea
 												<button
 													type="button"
 													onClick={() => onRemoveItem(item.id)}
-													className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--sea-ink-soft)] transition-colors hover:text-[#e53e3e] hover:bg-[rgba(229,62,62,0.08)]"
+													className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--sea-ink-soft)] transition-colors hover:bg-[rgba(229,62,62,0.08)] hover:text-[#e53e3e]"
 												>
 													<Minus size={14} />
 												</button>
