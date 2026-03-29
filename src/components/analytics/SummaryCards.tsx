@@ -1,4 +1,4 @@
-import { Coins, Receipt, ShoppingBag, TrendingUp } from 'lucide-react'
+import { CheckCircle, Coins, Maximize, Minus, Receipt, ShoppingBag, TrendingUp, UtensilsCrossed } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 interface SummaryCardsProps {
@@ -6,21 +6,48 @@ interface SummaryCardsProps {
 	totalSpendingCents: number
 	avgOrderCents: number
 	totalItems: number
+	biggestOrderCents: number
+	medianOrderCents: number
+	completionRate: number
+	dishVariety: number
 }
 
-const CARDS: { label: string; icon: LucideIcon; accent: string }[] = [
+interface CardDef {
+	label: string
+	icon: LucideIcon
+	accent: string
+}
+
+const CARDS: CardDef[] = [
 	{ label: 'Total Orders', icon: Receipt, accent: 'var(--lagoon)' },
 	{ label: 'Total Spent', icon: Coins, accent: 'var(--palm)' },
 	{ label: 'Avg. Order', icon: TrendingUp, accent: 'var(--lagoon-deep)' },
 	{ label: 'Items Ordered', icon: ShoppingBag, accent: 'var(--palm)' },
+	{ label: 'Biggest Order', icon: Maximize, accent: '#e8924a' },
+	{ label: 'Median Order', icon: Minus, accent: '#c74375' },
+	{ label: 'Completion Rate', icon: CheckCircle, accent: 'var(--lagoon-deep)' },
+	{ label: 'Dish Variety', icon: UtensilsCrossed, accent: '#7c6fcd' },
 ]
 
-export function SummaryCards({ totalOrders, totalSpendingCents, avgOrderCents, totalItems }: SummaryCardsProps) {
+export function SummaryCards({
+	totalOrders,
+	totalSpendingCents,
+	avgOrderCents,
+	totalItems,
+	biggestOrderCents,
+	medianOrderCents,
+	completionRate,
+	dishVariety,
+}: SummaryCardsProps) {
 	const values = [
 		totalOrders.toLocaleString(),
 		`€${(totalSpendingCents / 100).toFixed(2)}`,
 		`€${(avgOrderCents / 100).toFixed(2)}`,
 		totalItems.toLocaleString(),
+		`€${(biggestOrderCents / 100).toFixed(2)}`,
+		`€${(medianOrderCents / 100).toFixed(2)}`,
+		`${Math.round(completionRate)}%`,
+		`${Math.round(dishVariety)}%`,
 	]
 
 	return (
@@ -31,7 +58,7 @@ export function SummaryCards({ totalOrders, totalSpendingCents, avgOrderCents, t
 					<div
 						key={card.label}
 						className="group animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px] transition-transform duration-200 hover:-translate-y-0.5"
-						style={{ animationDelay: `${i * 80}ms` }}
+						style={{ animationDelay: `${i * 60}ms` }}
 					>
 						<div
 							className="h-[3px] opacity-75 transition-opacity duration-200 group-hover:opacity-100"
