@@ -14,6 +14,12 @@ export const queries = defineQueries({
 	orders: {
 		all: defineQuery(() => zql.orders),
 		withItems: defineQuery(() => zql.orders.related('items')),
+		openWithItems: defineQuery(() =>
+			zql.orders.where('completed', false).orderBy('createdAt', 'desc').related('items'),
+		),
+		recentCompletedWithItems: defineQuery(() =>
+			zql.orders.where('completed', true).orderBy('createdAt', 'desc').limit(5).related('items'),
+		),
 		withItemsAndDishes: defineQuery(() => zql.orders.related('items', (q) => q.related('dish'))),
 		withItemsDishesAndGroups: defineQuery(() =>
 			zql.orders.related('items', (q) => q.related('dish', (q) => q.related('group'))),

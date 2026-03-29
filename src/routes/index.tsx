@@ -1,6 +1,6 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { BarChart3, CheckCircle2, Plus } from 'lucide-react'
+import { BarChart3, CheckCircle2, Clock, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
 import ThemeToggle from '#/components/ThemeToggle'
@@ -45,10 +45,53 @@ function PageLayout({ children }: { children?: React.ReactNode }) {
 	return <div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">{children}</div>
 }
 
+function OrderRow({
+	order,
+}: {
+	order: { id: string; completed: boolean; createdAt: number | null; items: readonly { priceCents: number }[] }
+}) {
+	const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
+	return (
+		<Link
+			to="/train/$orderId"
+			params={{ orderId: order.id }}
+			className={cn(
+				'flex items-center justify-between py-4 no-underline',
+				order.completed ? 'opacity-60' : 'text-[var(--sea-ink)]',
+			)}
+		>
+			<div className="flex flex-col gap-0.5">
+				<div className="flex items-center gap-3">
+					<span className={cn('text-base font-medium', order.completed && 'text-[var(--sea-ink-soft)] line-through')}>
+						Order {order.id.slice(-8)}
+					</span>
+					{order.completed && (
+						<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
+							<CheckCircle2 size={12} />
+							Done
+						</span>
+					)}
+					{!order.completed && (
+						<span className="flex items-center gap-1 text-sm text-[var(--sea-ink-soft)]">
+							<Clock size={12} />
+							{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
+						</span>
+					)}
+				</div>
+				{order.createdAt != null && (
+					<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">{formatOrderDate(order.createdAt)}</span>
+				)}
+			</div>
+			<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
+		</Link>
+	)
+}
+
 function App() {
 	const zero = useZero()
 	const navigate = useNavigate()
-	const [orders, result] = useQuery(queries.orders.withItems())
+	const [openOrders, openResult] = useQuery(queries.orders.openWithItems())
+	const [completedOrders, completedResult] = useQuery(queries.orders.recentCompletedWithItems())
 
 	function handleCreateOrder() {
 		const id = ulid()
@@ -56,7 +99,12 @@ function App() {
 		void navigate({ to: '/train/$orderId', params: { orderId: id } })
 	}
 
-	if (orders.length === 0 && result.type !== 'complete') {
+	const loading =
+		openOrders.length === 0 &&
+		completedOrders.length === 0 &&
+		(openResult.type !== 'complete' || completedResult.type !== 'complete')
+
+	if (loading) {
 		return (
 			<>
 				<Nav onCreateOrder={handleCreateOrder} />
@@ -65,7 +113,7 @@ function App() {
 		)
 	}
 
-	if (orders.length === 0) {
+	if (openOrders.length === 0 && completedOrders.length === 0) {
 		return (
 			<>
 				<Nav onCreateOrder={handleCreateOrder} />
@@ -80,54 +128,30 @@ function App() {
 		<>
 			<Nav onCreateOrder={handleCreateOrder} />
 			<PageLayout>
-				<div className="divide-y divide-[var(--line)]">
-					{[...orders].reverse().map((order) => {
-						const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
-						return (
-							<Link
-								key={order.id}
-								to="/train/$orderId"
-								params={{ orderId: order.id }}
-								className={cn(
-									'flex items-center justify-between py-4 no-underline',
-									order.completed ? 'opacity-60' : 'text-[var(--sea-ink)]',
-								)}
-							>
-								<div className="flex flex-col gap-0.5">
-									<div className="flex items-center gap-3">
-										<span
-											className={cn(
-												'text-base font-medium',
-												order.completed && 'text-[var(--sea-ink-soft)] line-through',
-											)}
-										>
-											Order {order.id.slice(-8)}
-										</span>
-										{order.completed && (
-											<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
-												<CheckCircle2 size={12} />
-												Done
-											</span>
-										)}
-										{!order.completed && (
-											<span className="text-sm text-[var(--sea-ink-soft)]">
-												{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
-											</span>
-										)}
-									</div>
-									{order.createdAt != null && (
-										<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">
-											{formatOrderDate(order.createdAt)}
-										</span>
-									)}
-								</div>
-								<span className="text-sm font-medium text-[var(--palm)] tabular-nums">
-									€{(totalCents / 100).toFixed(2)}
-								</span>
-							</Link>
-						)
-					})}
-				</div>
+				{openOrders.length > 0 && (
+					<section>
+						<h2 className="mb-2 text-sm font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">
+							Open Orders
+						</h2>
+						<div className="divide-y divide-[var(--line)]">
+							{openOrders.map((order) => (
+								<OrderRow key={order.id} order={order} />
+							))}
+						</div>
+					</section>
+				)}
+				{completedOrders.length > 0 && (
+					<section className={openOrders.length > 0 ? 'mt-8' : ''}>
+						<h2 className="mb-2 text-sm font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">
+							Recently Completed
+						</h2>
+						<div className="divide-y divide-[var(--line)]">
+							{completedOrders.map((order) => (
+								<OrderRow key={order.id} order={order} />
+							))}
+						</div>
+					</section>
+				)}
 			</PageLayout>
 		</>
 	)
