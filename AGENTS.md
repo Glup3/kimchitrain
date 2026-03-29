@@ -14,8 +14,7 @@ npm run preview      # Preview production build
 # Linting & Formatting
 npm run lint         # Run oxlint (fast JS/TS linter)
 npm run lint:ts      # Type-check with tsgo (--noEmit)
-npm run fmt          # Check formatting with oxfmt
-npm run fmt:fix      # Auto-fix formatting with oxfmt
+npm run fmt          # Auto-fix formatting with oxfmt
 
 # Testing
 npm run test         # Run all tests with vitest
