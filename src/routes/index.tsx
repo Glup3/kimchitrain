@@ -48,9 +48,15 @@ function PageLayout({ children }: { children?: React.ReactNode }) {
 function OrderRow({
 	order,
 }: {
-	order: { id: string; completed: boolean; createdAt: number | null; items: readonly { priceCents: number }[] }
+	order: {
+		id: string
+		completed: boolean
+		createdAt: number | null
+		items: readonly { priceCents: number; orderer: string }[]
+	}
 }) {
 	const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
+	const orderers = [...new Set(order.items.map((item) => item.orderer))]
 	return (
 		<Link
 			to="/train/$orderId"
@@ -81,6 +87,7 @@ function OrderRow({
 				{order.createdAt != null && (
 					<span className="text-xs text-[var(--sea-ink-soft)] opacity-60">{formatOrderDate(order.createdAt)}</span>
 				)}
+				{orderers.length > 0 && <span className="text-xs text-[var(--sea-ink-soft)]">{orderers.join(', ')}</span>}
 			</div>
 			<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
 		</Link>
