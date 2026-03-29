@@ -1,8 +1,8 @@
 import type { ZeroOptions } from '@rocicorp/zero'
-import { ZeroProvider } from '@rocicorp/zero/react'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { lazy } from 'react'
 
 import { schema } from '#/db/zero-schema'
 import { env } from '#/env'
@@ -36,6 +36,12 @@ export const Route = createRootRoute({
 	shellComponent: RootDocument,
 })
 
+const ZeroProvider = lazy(() =>
+	import('@rocicorp/zero/react').then((mod) => ({
+		default: mod.ZeroProvider,
+	})),
+)
+
 const opts: ZeroOptions = {
 	userID: 'anon',
 	cacheURL: env.VITE_ZERO_SERVER,
@@ -50,7 +56,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
 				<HeadContent />
 			</head>
-			<body className="font-sans [overflow-wrap:anywhere] antialiased selection:bg-[rgba(79,184,178,0.24)]">
+			<body className="font-sans wrap-anywhere antialiased selection:bg-[rgba(79,184,178,0.24)]">
 				<ZeroProvider {...opts}>{children}</ZeroProvider>
 				<TanStackDevtools
 					config={{
