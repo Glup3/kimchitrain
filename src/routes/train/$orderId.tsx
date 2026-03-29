@@ -29,7 +29,7 @@ function OrderPage() {
 	const { orderId } = Route.useParams()
 	const zero = useZero()
 	const [dishesWithGroup] = useQuery(queries.dishes.withGroup())
-	const [orderRows] = useQuery(queries.orders.byIdWithItemsAndDishes(orderId))
+	const [orderRows, orderResult] = useQuery(queries.orders.byIdWithItemsAndDishes(orderId))
 	const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
 	const [defaultName, setDefaultName] = useState(getDefaultName)
 	const [copied, setCopied] = useState(false)
@@ -103,6 +103,7 @@ function OrderPage() {
 	}
 
 	if (!order) {
+		if (orderResult.type !== 'complete') return null
 		return (
 			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
 				<Link to="/" className="flex items-center gap-1.5 text-sm text-(--lagoon-deep) no-underline">

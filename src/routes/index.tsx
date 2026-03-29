@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({ component: App })
 function App() {
 	const zero = useZero()
 	const navigate = useNavigate()
-	const [orders] = useQuery(queries.orders.withItems())
+	const [orders, result] = useQuery(queries.orders.withItems())
 
 	async function handleCreateOrder() {
 		const id = ulid()
@@ -49,9 +49,9 @@ function App() {
 			</nav>
 
 			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
-				{orders.length === 0 ? (
+				{orders.length === 0 && result.type === 'complete' ? (
 					<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
-				) : (
+				) : orders.length > 0 ? (
 					<div className="divide-y divide-[var(--line)]">
 						{[...orders].reverse().map((order) => {
 							const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
@@ -100,7 +100,7 @@ function App() {
 							)
 						})}
 					</div>
-				)}
+				) : null}
 			</div>
 		</>
 	)

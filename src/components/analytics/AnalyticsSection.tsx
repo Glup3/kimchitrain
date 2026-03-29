@@ -8,11 +8,16 @@ import { SummaryCards } from './SummaryCards'
 import { TopDishesChart } from './TopDishesChart'
 
 export function AnalyticsSection() {
-	const [orders] = useQuery(queries.orders.withItemsAndDishes())
+	const [orders, result] = useQuery(queries.orders.withItemsAndDishes())
+
+	if (orders.length === 0) {
+		if (result.type !== 'complete') return null
+		return (
+			<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
+		)
+	}
 
 	const totalOrders = orders.length
-	if (totalOrders === 0) return null
-
 	const allItems = orders.flatMap((o) => o.items)
 	const totalSpendingCents = allItems.reduce((s, i) => s + i.priceCents, 0)
 	const avgOrderCents = totalOrders > 0 ? totalSpendingCents / totalOrders : 0
