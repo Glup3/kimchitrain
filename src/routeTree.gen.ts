@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainOrderIdRouteImport } from './routes/train/$orderId'
 import { Route as ApiQueryRouteImport } from './routes/api.query'
 import { Route as ApiMutateRouteImport } from './routes/api.mutate'
 
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const ApiMutateRoute = ApiMutateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
@@ -50,20 +58,33 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/api/mutate'
+    | '/api/query'
+    | '/train/$orderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
-  id: '__root__' | '/' | '/api/mutate' | '/api/query' | '/train/$orderId'
+  to: '/' | '/analytics' | '/api/mutate' | '/api/query' | '/train/$orderId'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/api/mutate'
+    | '/api/query'
+    | '/train/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   ApiMutateRoute: typeof ApiMutateRoute
   ApiQueryRoute: typeof ApiQueryRoute
   TrainOrderIdRoute: typeof TrainOrderIdRoute
@@ -71,6 +92,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
   ApiMutateRoute: ApiMutateRoute,
   ApiQueryRoute: ApiQueryRoute,
   TrainOrderIdRoute: TrainOrderIdRoute,

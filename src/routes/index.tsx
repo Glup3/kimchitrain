@@ -1,9 +1,8 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { CheckCircle2, Plus } from 'lucide-react'
+import { BarChart3, CheckCircle2, Plus } from 'lucide-react'
 import { ulid } from 'ulid'
 
-import { AnalyticsSection } from '#/components/analytics/AnalyticsSection'
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
@@ -28,20 +27,28 @@ function App() {
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
 				<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center justify-between">
 					<h1 className="font-['Syne',sans-serif] text-lg font-bold tracking-tight text-[var(--sea-ink)]">Kimchi Train</h1>
-					<button
-						type="button"
-						onClick={handleCreateOrder}
-						className="flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-[var(--lagoon)] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
-					>
-						<Plus size={16} strokeWidth={2.5} />
-						New Order
-					</button>
+					<div className="flex items-center gap-2">
+						<Link
+							to="/analytics"
+							className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
+						>
+							<BarChart3 size={16} strokeWidth={2.5} />
+							Analytics
+						</Link>
+						<button
+							type="button"
+							onClick={handleCreateOrder}
+							className="flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-[var(--lagoon)] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+						>
+							<Plus size={16} strokeWidth={2.5} />
+							New Order
+						</button>
+					</div>
 				</div>
 			</nav>
 
-			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
-				<AnalyticsSection />
-				{orders.length === 0 ? (
+		<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
+			{orders.length === 0 ? (
 					<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
 				) : (
 					<div className="divide-y divide-[var(--line)]">
