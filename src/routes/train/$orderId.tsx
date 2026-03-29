@@ -2,18 +2,16 @@ import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, Check, CheckCircle2, ChevronUp, Circle, Flame, HelpCircle, Link2, User } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { useJoyride, STATUS } from 'react-joyride'
-import type { Status as StatusType } from 'react-joyride'
 
 import { DishCard } from '#/components/DishCard'
 import { OrderSummary } from '#/components/OrderSummary'
+import { useOrderTour } from '#/hooks/useOrderTour'
 import { formatOrderDate } from '#/lib/format'
 import { mutators } from '#/lib/mutators'
 import { queries } from '#/lib/queries'
 import { cn } from '#/lib/utils'
 
 const NAME_KEY = 'kimchi-train:name'
-const TOUR_COMPLETED_KEY = 'kimchi-train:tour-completed'
 
 function getDefaultName(): string {
 	try {
@@ -38,68 +36,7 @@ function OrderPage() {
 	const [defaultName, setDefaultName] = useState(getDefaultName)
 	const [copied, setCopied] = useState(false)
 
-	const [runTour, setRunTour] = useState(() => {
-		try {
-			return !localStorage.getItem(TOUR_COMPLETED_KEY)
-		} catch {
-			return true
-		}
-	})
-
-	const { Tour, controls } = useJoyride({
-		continuous: true,
-		run: runTour,
-		options: {
-			primaryColor: '#f87171',
-			backgroundColor: '#292524',
-			textColor: '#fafaf9',
-			arrowColor: '#292524',
-			buttons: ['back', 'close', 'primary', 'skip'],
-			skipBeacon: true,
-			closeButtonAction: 'skip',
-		},
-		steps: [
-			{
-				target: '[data-tour="name-input"]',
-				content: 'Enter your name here so everyone knows which items are yours. This is saved for next time!',
-				title: 'Step 1 — Set your name',
-				placement: 'bottom',
-			},
-			{
-				target: '[data-tour="dish-menu-1"]',
-				content: 'Browse the menu and tap any dish to add it to your order.',
-				title: 'Step 2 — Pick your dishes',
-				placement: 'right',
-			},
-			{
-				target: '[data-tour="order-summary"]',
-				content: 'Your selected items appear here with the running total.',
-				title: 'Step 3 — Review your order',
-				placement: 'left',
-				targetWaitTimeout: 0,
-			},
-			{
-				target: '[data-tour="complete-btn"]',
-				content: 'Mark the order as complete when everyone has placed their orders.',
-				title: 'Step 4 — Complete the order',
-				placement: 'bottom',
-			},
-			{
-				target: '[data-tour="share-btn"]',
-				content: 'Share this link with others so they can add their orders too.',
-				title: 'Step 5 — Share with friends',
-				placement: 'bottom',
-			},
-		],
-		onEvent: (data) => {
-			if (([STATUS.FINISHED, STATUS.SKIPPED] as unknown as StatusType).includes(data.status)) {
-				setRunTour(false)
-				try {
-					localStorage.setItem(TOUR_COMPLETED_KEY, '1')
-				} catch {}
-			}
-		},
-	})
+	const { Tour, restartTour } = useOrderTour()
 
 	const handleCopyLink = useCallback(() => {
 		navigator.clipboard.writeText(window.location.href).then(() => {
@@ -109,7 +46,7 @@ function OrderPage() {
 	}, [])
 
 	function handleRestartTour() {
-		controls.reset(true)
+		restartTour()
 	}
 
 	function handleToggleCompleted() {
