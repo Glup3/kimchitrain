@@ -4,6 +4,8 @@ import { queries } from '#/lib/queries'
 
 import { BusiestDayChart } from './BusiestDayChart'
 import { CategoryBreakdownChart } from './CategoryBreakdownChart'
+import { CumulativeSpendingChart } from './CumulativeSpendingChart'
+import { DishLoyaltyChart } from './DishLoyaltyChart'
 import { OrderSizeChart } from './OrderSizeChart'
 import { PriceRangeChart } from './PriceRangeChart'
 import { SpendingChart } from './SpendingChart'
@@ -73,6 +75,35 @@ export function AnalyticsSection() {
 			label: new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
 		}))
 
+	const cumulativeData = (() => {
+		let running = 0
+		return spendingData.map((d) => {
+			running += d.spending
+			return { label: d.label, cumulative: +running.toFixed(2) }
+		})
+	})()
+
+	const dishLoyalty = (() => {
+		const orderDishSets = orders.map((o) => new Set(o.items.map((i) => i.dishId)))
+		const counts = new Map<number, { name: string; orders: number }>()
+		for (const item of allItems) {
+			if (!counts.has(item.dishId)) {
+				counts.set(item.dishId, { name: item.dish?.name ?? 'Unknown', orders: 0 })
+			}
+		}
+		for (const dishId of counts.keys()) {
+			for (const orderSet of orderDishSets) {
+				if (orderSet.has(dishId)) {
+					counts.get(dishId)!.orders++
+				}
+			}
+		}
+		return [...counts.values()]
+			.map((d) => ({ name: d.name, loyalty: totalOrders > 0 ? Math.round((d.orders / totalOrders) * 100) : 0 }))
+			.sort((a, b) => b.loyalty - a.loyalty)
+			.slice(0, 8)
+	})()
+
 	const categoryMap = new Map<string, number>()
 	for (const item of allItems) {
 		const groupName = item.dish?.group?.name ?? 'Other'
@@ -141,6 +172,8 @@ export function AnalyticsSection() {
 			<div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
 				{topDishes.length > 0 && <TopDishesChart data={topDishes} />}
 				{spendingData.length > 0 && <SpendingChart data={spendingData} />}
+				{cumulativeData.length > 0 && <CumulativeSpendingChart data={cumulativeData} />}
+				{dishLoyalty.length > 0 && <DishLoyaltyChart data={dishLoyalty} totalOrders={totalOrders} />}
 				{categoryData.length > 0 && <CategoryBreakdownChart data={categoryData} />}
 				{dayBuckets.size > 0 && <BusiestDayChart data={busiestDayData} />}
 				{orderSizeData.length > 0 && <OrderSizeChart data={orderSizeData} />}
