@@ -41,7 +41,7 @@ function OrdererInput({
 			placeholder="Name…"
 			disabled={readOnly}
 			className={cn(
-				'orderer-input flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all',
+				'flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all placeholder:opacity-50 placeholder:text-[var(--sea-ink-soft)] focus:border-[var(--lagoon)] focus:shadow-[0_0_0_2px_rgba(79,184,178,0.18)]',
 				readOnly && 'opacity-60 cursor-default border-transparent',
 			)}
 		/>
@@ -71,7 +71,7 @@ export function OrderSummary({ items, dishes, onRemoveItem, onUpdateOrderer, rea
 	}, new Map())
 
 	return (
-		<div className="island-shell overflow-hidden rounded-xl">
+		<div className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]">
 			<div className="flex items-center gap-2 border-b border-[var(--line)] px-5 py-3">
 				<h2 className="text-base font-semibold text-[var(--sea-ink)]">Order</h2>
 				{items.length > 0 && (
@@ -113,7 +113,7 @@ export function OrderSummary({ items, dishes, onRemoveItem, onUpdateOrderer, rea
 												<button
 													type="button"
 													onClick={() => onRemoveItem(item.id)}
-													className="order-remove-btn flex h-6 w-6 shrink-0 items-center justify-center rounded border-0 bg-transparent text-[var(--sea-ink-soft)]"
+													className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--sea-ink-soft)] transition-colors hover:text-[#e53e3e] hover:bg-[rgba(229,62,62,0.08)]"
 												>
 													<Minus size={14} />
 												</button>

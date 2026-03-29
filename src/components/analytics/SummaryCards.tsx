@@ -30,7 +30,7 @@ export function SummaryCards({ totalOrders, totalRevenueCents, avgOrderCents, co
 				return (
 					<div
 						key={card.label}
-						className="rise-in island-shell group overflow-hidden rounded-xl transition-transform duration-200 hover:-translate-y-0.5"
+						className="group overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px] animate-[rise-in_700ms_cubic-bezier(0.16,1,0.3,1)_both] transition-transform duration-200 hover:-translate-y-0.5"
 						style={{ animationDelay: `${i * 80}ms` }}
 					>
 						<div
@@ -45,9 +45,9 @@ export function SummaryCards({ totalOrders, totalRevenueCents, avgOrderCents, co
 								>
 									<Icon size={14} strokeWidth={2.5} style={{ color: card.accent }} />
 								</div>
-								<span className="island-kicker text-[0.62rem]">{card.label}</span>
+								<span className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[var(--kicker)]">{card.label}</span>
 							</div>
-							<div className="display-title text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: card.accent }}>
+							<div className="font-['Fraunces',Georgia,serif] text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: card.accent }}>
 								{values[i]}
 							</div>
 						</div>

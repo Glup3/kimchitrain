@@ -25,7 +25,7 @@ export function DishCard({ dish, onAdd, disabled }: DishCardProps) {
 					onClick={onAdd}
 					disabled={disabled}
 					className={cn(
-						'dish-add-btn shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center border-0',
+						'shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center border-0 cursor-pointer transition-transform hover:scale-110 hover:shadow-[0_4px_14px_rgba(79,184,178,0.35)] active:scale-95',
 						disabled ? 'bg-[var(--line)] cursor-not-allowed opacity-40' : 'bg-[var(--lagoon)] cursor-pointer',
 					)}
 				>

@@ -105,7 +105,7 @@ function OrderPage() {
 
 	if (!order) {
 		return (
-			<div className="page-wrap py-8">
+			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
 				<Link to="/" className="flex items-center gap-1.5 text-sm text-[var(--lagoon-deep)] no-underline">
 					<ArrowLeft size={16} />
 					Back to orders
@@ -118,7 +118,7 @@ function OrderPage() {
 	return (
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
-				<div className="page-wrap flex h-14 items-center gap-3">
+				<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center gap-3">
 					<Link
 						to="/"
 						className="flex items-center gap-1.5 text-sm text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
@@ -167,7 +167,7 @@ function OrderPage() {
 				</div>
 			</nav>
 
-			<div className="page-wrap py-8 pb-28 lg:pb-8">
+			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8 pb-28 lg:pb-8">
 				<div className="flex flex-col gap-8 lg:flex-row">
 					<section className="min-w-0 flex-1 self-start">
 						<div className="mb-4 flex items-center gap-1.5 text-xs text-[var(--sea-ink-soft)]">
@@ -176,7 +176,7 @@ function OrderPage() {
 						</div>
 						{[...grouped.entries()].map(([groupId, groupDishes]) => (
 							<div key={groupId} className="mb-6">
-								<h2 className="island-kicker mb-2">{groupMap.get(groupId) ?? 'Other'}</h2>
+								<h2 className="mb-2 text-[0.69rem] font-bold uppercase tracking-[0.16em] text-[var(--kicker)]">{groupMap.get(groupId) ?? 'Other'}</h2>
 								<div className="divide-y divide-[var(--line)]">
 									{groupDishes.map((dish) => (
 										<DishCard
@@ -199,7 +199,7 @@ function OrderPage() {
 				</div>
 
 				{currentOrderItems.length > 0 && (
-					<div className="mobile-summary-bar fixed inset-x-0 bottom-0 z-50 lg:hidden">
+					<div className="fixed inset-x-0 bottom-0 z-50 animate-[rise-in_400ms_cubic-bezier(0.16,1,0.3,1)_both] lg:hidden">
 						{mobileSheetOpen && (
 							<div className="max-h-[55vh] overflow-y-auto rounded-t-xl">
 								<OrderSummary {...summaryProps} />
@@ -208,7 +208,7 @@ function OrderPage() {
 						<button
 							type="button"
 							onClick={() => setMobileSheetOpen((v) => !v)}
-							className="island-shell flex w-full items-center justify-between rounded-none border-t border-[var(--line)] px-5 py-3"
+							className="flex w-full items-center justify-between rounded-none border border-[var(--line)] border-t border-[var(--line)] bg-[var(--surface-strong)] px-5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]"
 						>
 							<span className="text-sm font-medium text-[var(--sea-ink)]">
 								{currentOrderItems.length} {currentOrderItems.length === 1 ? 'item' : 'items'}

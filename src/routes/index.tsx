@@ -26,8 +26,8 @@ function App() {
 	return (
 		<>
 			<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
-				<div className="page-wrap flex h-14 items-center justify-between">
-					<h1 className="display-title text-lg font-bold tracking-tight text-[var(--sea-ink)]">Kimchi Train</h1>
+				<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center justify-between">
+					<h1 className="font-['Fraunces',Georgia,serif] text-lg font-bold tracking-tight text-[var(--sea-ink)]">Kimchi Train</h1>
 					<button
 						type="button"
 						onClick={handleCreateOrder}
@@ -39,7 +39,7 @@ function App() {
 				</div>
 			</nav>
 
-			<div className="page-wrap py-8">
+			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
 				<AnalyticsSection />
 				{orders.length === 0 ? (
 					<p className="py-16 text-center text-sm text-[var(--sea-ink-soft)]">No orders yet</p>
