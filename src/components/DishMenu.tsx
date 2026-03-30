@@ -33,7 +33,7 @@ export function DishMenu({ dishes, disabled, onAddDish }: DishMenuProps) {
 	}, new Map())
 
 	return (
-		<section className="min-w-0 flex-1 self-start">
+		<section className="min-w-0 flex-1">
 			<div className="mb-4 flex items-center gap-1.5 text-xs text-(--sea-ink-soft)">
 				<Flame size={13} className="text-orange-500" />
 				<span>Popular</span>
