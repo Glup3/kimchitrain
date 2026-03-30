@@ -82,6 +82,10 @@ function OrderPage() {
 		zero.mutate(mutators.orderItems.updateOrderer({ id, orderer }))
 	}
 
+	function handleSettleItem(id: string, settled: boolean) {
+		zero.mutate(mutators.orderItems.setSettled({ id, settled }))
+	}
+
 	const isCompleted = order.completed
 	const currentOrderItems = order.items
 	const totalCents = currentOrderItems.reduce((sum, item) => sum + item.priceCents, 0)
@@ -90,6 +94,7 @@ function OrderPage() {
 		items: currentOrderItems,
 		onRemoveItem: handleRemoveItem,
 		onUpdateOrderer: handleUpdateOrderer,
+		onSettleItem: handleSettleItem,
 		readOnly: isCompleted,
 	}
 
@@ -116,6 +121,7 @@ function OrderPage() {
 							totalCents={totalCents}
 							onRemoveItem={handleRemoveItem}
 							onUpdateOrderer={handleUpdateOrderer}
+							onSettleItem={handleSettleItem}
 							readOnly={isCompleted}
 						/>
 						<DishMenu dishes={dishesWithGroup} disabled={isCompleted} onAddDish={handleAddDish} />

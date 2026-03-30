@@ -1,0 +1,202 @@
+{
+	"id": "2de3aea6-1c6d-4880-b4d6-a4d26d07e0ce",
+	"prevId": "8f8a4cf5-30da-4604-b106-614e0425a4be",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.dish_groups": {
+			"name": "dish_groups",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.dishes": {
+			"name": "dishes",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"price_cents": {
+					"name": "price_cents",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"is_popular": {
+					"name": "is_popular",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"group_id": {
+					"name": "group_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"dishes_group_id_dish_groups_id_fk": {
+					"name": "dishes_group_id_dish_groups_id_fk",
+					"tableFrom": "dishes",
+					"tableTo": "dish_groups",
+					"columnsFrom": ["group_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.order_items": {
+			"name": "order_items",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "varchar(26)",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"orderer": {
+					"name": "orderer",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"price_cents": {
+					"name": "price_cents",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"settled": {
+					"name": "settled",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"dish_id": {
+					"name": "dish_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"order_id": {
+					"name": "order_id",
+					"type": "varchar(26)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"order_items_dish_id_dishes_id_fk": {
+					"name": "order_items_dish_id_dishes_id_fk",
+					"tableFrom": "order_items",
+					"tableTo": "dishes",
+					"columnsFrom": ["dish_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"order_items_order_id_orders_id_fk": {
+					"name": "order_items_order_id_orders_id_fk",
+					"tableFrom": "order_items",
+					"tableTo": "orders",
+					"columnsFrom": ["order_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.orders": {
+			"name": "orders",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "varchar(26)",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"completed": {
+					"name": "completed",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

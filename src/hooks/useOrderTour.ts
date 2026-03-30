@@ -25,8 +25,9 @@ const steps = [
 	},
 	{
 		target: '[data-tour="complete-btn"]',
-		content: 'Mark the order as complete when everyone has placed their orders.',
-		title: 'Step 4 — Complete the order',
+		content:
+			"Once you've called in the order, mark it complete. This locks the order and lets you track who has paid you back.",
+		title: 'Step 4 — Complete & collect',
 		placement: 'bottom' as const,
 	},
 	{

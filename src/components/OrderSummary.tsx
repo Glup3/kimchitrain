@@ -1,4 +1,4 @@
-import { Minus, User } from 'lucide-react'
+import { Check, Minus, User } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Dish, OrderItem } from '#/db/zero-schema'
@@ -54,10 +54,11 @@ interface OrderSummaryProps {
 	items: readonly EnrichedOrderItem[]
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
+	onSettleItem: (id: string, settled: boolean) => void
 	readOnly?: boolean
 }
 
-export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }: OrderSummaryProps) {
+export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, onSettleItem, readOnly }: OrderSummaryProps) {
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
 	const prevCountRef = useRef(items.length)
 	const [countBumped, setCountBumped] = useState(false)
@@ -150,7 +151,7 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 
 			{items.length > 0 && (
 				<div className="shrink-0">
-					<PersonBreakdown items={items} />
+					<PersonBreakdown items={items} onSettleItem={onSettleItem} readOnly={readOnly} />
 					<div className="flex items-center justify-between border-t border-[var(--line)] px-5 py-3">
 						<span className="text-sm font-semibold text-[var(--sea-ink)]">Total</span>
 						<span className="text-base font-bold text-[var(--palm)] tabular-nums">
@@ -163,32 +164,95 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 	)
 }
 
-function PersonBreakdown({ items }: { items: readonly EnrichedOrderItem[] }) {
+function PersonBreakdown({
+	items,
+	onSettleItem,
+	readOnly,
+}: {
+	items: readonly EnrichedOrderItem[]
+	onSettleItem: (id: string, settled: boolean) => void
+	readOnly?: boolean
+}) {
 	const perPerson = useMemo(() => {
-		const map = new Map<string, number>()
+		const map = new Map<string, { cents: number; settledCents: number; itemIds: string[] }>()
 		for (const item of items) {
 			const name = item.orderer.trim() || 'Unassigned'
-			map.set(name, (map.get(name) ?? 0) + item.priceCents)
+			const entry = map.get(name) ?? { cents: 0, settledCents: 0, itemIds: [] as string[] }
+			entry.cents += item.priceCents
+			if (item.settled) entry.settledCents += item.priceCents
+			entry.itemIds.push(item.id)
+			map.set(name, entry)
 		}
 		return [...map.entries()].sort(([a], [b]) => a.localeCompare(b))
 	}, [items])
 
-	if (perPerson.length < 2) return null
+	if (perPerson.length < 2 && !readOnly) return null
+
+	const allSettled = perPerson.every(([, entry]) => entry.settledCents === entry.cents)
 
 	return (
 		<div className="border-t border-[var(--line)] px-5 py-3">
-			<h3 className="mb-2 text-xs font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">Per person</h3>
+			<h3 className="mb-2 text-xs font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">
+				{readOnly ? 'Payment tracking' : 'Per person'}
+			</h3>
 			<div className="flex flex-col gap-1.5">
-				{perPerson.map(([name, cents]) => (
-					<div key={name} className="flex items-center justify-between">
-						<span className="flex items-center gap-1.5 text-sm text-[var(--sea-ink)]">
-							<User size={13} className="text-[var(--sea-ink-soft)]" />
-							{name}
-						</span>
-						<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(cents / 100).toFixed(2)}</span>
-					</div>
-				))}
+				{perPerson.map(([name, entry]) => {
+					const isFullySettled = entry.settledCents === entry.cents
+					return (
+						<div key={name} className="flex items-center justify-between gap-2">
+							<span className="flex items-center gap-1.5 text-sm text-[var(--sea-ink)]">
+								<User size={13} className="text-[var(--sea-ink-soft)]" />
+								{name}
+							</span>
+							<div className="flex items-center gap-2">
+								<span
+									className={cn(
+										'text-sm tabular-nums',
+										isFullySettled
+											? 'font-medium text-[var(--sea-ink-soft)] line-through'
+											: 'font-medium text-[var(--palm)]',
+									)}
+								>
+									€{(entry.cents / 100).toFixed(2)}
+								</span>
+								{readOnly && (
+									<button
+										type="button"
+										onClick={() => {
+											const nextSettled = !isFullySettled
+											for (const id of entry.itemIds) {
+												onSettleItem(id, nextSettled)
+											}
+										}}
+										className={cn(
+											'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-all',
+											isFullySettled
+												? 'border-[var(--lagoon)] bg-[var(--lagoon)] text-white'
+												: 'border-[var(--line)] bg-transparent text-transparent hover:border-[var(--lagoon)] hover:text-[var(--lagoon)]',
+										)}
+									>
+										<Check size={12} strokeWidth={3} />
+									</button>
+								)}
+							</div>
+						</div>
+					)
+				})}
 			</div>
+			{readOnly && !allSettled && (
+				<div className="mt-2 flex items-center justify-between border-t border-dashed border-[var(--line)] pt-2">
+					<span className="text-xs font-medium text-[var(--sea-ink-soft)]">Outstanding</span>
+					<span className="text-sm font-bold text-[var(--palm)] tabular-nums">
+						€{(perPerson.reduce((sum, [, e]) => sum + e.cents - e.settledCents, 0) / 100).toFixed(2)}
+					</span>
+				</div>
+			)}
+			{readOnly && allSettled && (
+				<div className="mt-2 flex items-center gap-1.5 border-t border-dashed border-[var(--line)] pt-2">
+					<Check size={13} className="text-[var(--lagoon)]" />
+					<span className="text-xs font-medium text-[var(--lagoon)]">All settled up</span>
+				</div>
+			)}
 		</div>
 	)
 }

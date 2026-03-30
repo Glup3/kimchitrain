@@ -33,6 +33,7 @@ export const mutators = defineMutators({
 					dishId: args.dishId,
 					orderId: args.orderId,
 					priceCents: args.priceCents,
+					settled: false,
 				})
 			},
 		),
@@ -40,6 +41,12 @@ export const mutators = defineMutators({
 			await tx.mutate.orderItems.update({
 				id: args.id,
 				orderer: args.orderer,
+			})
+		}),
+		setSettled: defineMutator(z.object({ id: z.string(), settled: z.boolean() }), async ({ tx, args }) => {
+			await tx.mutate.orderItems.update({
+				id: args.id,
+				settled: args.settled,
 			})
 		}),
 		remove: defineMutator(z.object({ id: z.string() }), async ({ tx, args }) => {

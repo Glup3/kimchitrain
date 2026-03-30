@@ -32,7 +32,7 @@ npm run db:zero      # Generate Zero schema from Drizzle schema
 **Before committing changes**, always run:
 
 ```bash
-npm run fmt:fix && npm run lint && npm run lint:ts
+npm run fmt && npm run lint && npm run lint:ts
 ```
 
 ## Formatting (oxfmt)

@@ -15,6 +15,13 @@
 			"when": 1774733516344,
 			"tag": "0001_seed-dishes",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1774832700991,
+			"tag": "0002_order_item_settlement_tracking",
+			"breakpoints": true
 		}
 	]
 }

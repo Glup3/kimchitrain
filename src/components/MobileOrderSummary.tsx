@@ -10,6 +10,7 @@ interface MobileOrderSummaryProps {
 	totalCents: number
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
+	onSettleItem: (id: string, settled: boolean) => void
 	readOnly: boolean
 }
 

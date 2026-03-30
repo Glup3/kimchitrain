@@ -8,11 +8,13 @@ export type OrderRowProps = {
 	id: string
 	completed: boolean
 	createdAt: number | null
-	items: readonly { priceCents: number; orderer: string }[]
+	items: readonly { priceCents: number; orderer: string; settled: boolean }[]
 }
 
 export default function OrderRow({ order }: { order: OrderRowProps }) {
 	const totalCents = order.items.reduce((sum, item) => sum + item.priceCents, 0)
+	const unsettledCents = order.items.filter((item) => !item.settled).reduce((sum, item) => sum + item.priceCents, 0)
+	const allSettled = order.completed && unsettledCents === 0
 	const orderers = [...new Set(order.items.map((item) => item.orderer))]
 	return (
 		<Link
@@ -20,7 +22,9 @@ export default function OrderRow({ order }: { order: OrderRowProps }) {
 			params={{ orderId: order.id }}
 			className={cn(
 				'flex items-center justify-between py-4 no-underline',
-				order.completed ? 'opacity-60' : 'text-[var(--sea-ink)]',
+				order.completed && !allSettled && 'opacity-60',
+				allSettled && 'opacity-40',
+				!order.completed && 'text-[var(--sea-ink)]',
 			)}
 		>
 			<div className="flex flex-col gap-0.5">
@@ -28,8 +32,14 @@ export default function OrderRow({ order }: { order: OrderRowProps }) {
 					<span className={cn('text-base font-medium', order.completed && 'text-[var(--sea-ink-soft)] line-through')}>
 						Order {order.id.slice(-8)}
 					</span>
-					{order.completed && (
+					{allSettled && (
 						<span className="flex items-center gap-1 text-xs font-medium text-[var(--lagoon)]">
+							<CheckCircle2 size={12} />
+							Settled
+						</span>
+					)}
+					{order.completed && !allSettled && (
+						<span className="flex items-center gap-1 text-xs font-medium text-[var(--palm)]">
 							<CheckCircle2 size={12} />
 							Done
 						</span>
@@ -46,7 +56,14 @@ export default function OrderRow({ order }: { order: OrderRowProps }) {
 				)}
 				{orderers.length > 0 && <span className="text-xs text-[var(--sea-ink-soft)]">{orderers.join(', ')}</span>}
 			</div>
-			<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
+			<div className="flex flex-col items-end gap-0.5">
+				<span className="text-sm font-medium text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
+				{order.completed && unsettledCents > 0 && (
+					<span className="text-xs font-medium text-[var(--sea-ink-soft)] tabular-nums">
+						€{(unsettledCents / 100).toFixed(2)} owed
+					</span>
+				)}
+			</div>
 		</Link>
 	)
 }

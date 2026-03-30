@@ -41,6 +41,7 @@ export const orderItems = pgTable('order_items', {
 	id: varchar({ length: 26 }).primaryKey(),
 	orderer: text().notNull(),
 	priceCents: integer('price_cents').notNull(),
+	settled: boolean().notNull(),
 	dishId: integer('dish_id')
 		.notNull()
 		.references(() => dishes.id),
