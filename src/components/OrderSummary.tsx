@@ -1,7 +1,9 @@
-import { Check, Minus, User } from 'lucide-react'
+import { Check, Copy, Minus, User } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { OrderShareCard } from '#/components/OrderShareCard'
 import type { Dish, OrderItem } from '#/db/zero-schema'
+import { useShareImage } from '#/hooks/useShareImage'
 import { cn } from '#/lib/utils'
 
 function OrdererInput({
@@ -52,16 +54,25 @@ export type EnrichedOrderItem = Readonly<OrderItem> & { readonly dish: Dish | un
 
 interface OrderSummaryProps {
 	items: readonly EnrichedOrderItem[]
+	createdAt: number | null
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
 	onSettleItem: (id: string, settled: boolean) => void
 	readOnly?: boolean
 }
 
-export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, onSettleItem, readOnly }: OrderSummaryProps) {
+export function OrderSummary({
+	items,
+	createdAt,
+	onRemoveItem,
+	onUpdateOrderer,
+	onSettleItem,
+	readOnly,
+}: OrderSummaryProps) {
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
 	const prevCountRef = useRef(items.length)
 	const [countBumped, setCountBumped] = useState(false)
+	const { shareRef, copyImage, copied } = useShareImage()
 
 	useEffect(() => {
 		if (items.length !== prevCountRef.current) {
@@ -158,8 +169,27 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, onSettleIte
 							€{(totalCents / 100).toFixed(2)}
 						</span>
 					</div>
+					{readOnly && (
+						<div className="border-t border-[var(--line)] px-5 py-3">
+							<button
+								type="button"
+								onClick={() => void copyImage()}
+								className={cn(
+									'flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all',
+									copied
+										? 'border-[var(--lagoon)] bg-[var(--lagoon)] text-white'
+										: 'border-[var(--line)] bg-[var(--surface-strong)] text-[var(--sea-ink)] hover:bg-[var(--link-bg-hover)]',
+								)}
+							>
+								<Copy size={14} />
+								{copied ? 'Copied!' : 'Copy as image'}
+							</button>
+						</div>
+					)}
 				</div>
 			)}
+
+			{readOnly && items.length > 0 && <OrderShareCard ref={shareRef} items={items} createdAt={createdAt} />}
 		</div>
 	)
 }

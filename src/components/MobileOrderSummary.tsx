@@ -8,6 +8,7 @@ import { cn } from '#/lib/utils'
 interface MobileOrderSummaryProps {
 	items: readonly EnrichedOrderItem[]
 	totalCents: number
+	createdAt: number | null
 	onRemoveItem: (id: string) => void
 	onUpdateOrderer: (id: string, orderer: string) => void
 	onSettleItem: (id: string, settled: boolean) => void

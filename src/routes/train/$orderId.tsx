@@ -92,6 +92,7 @@ function OrderPage() {
 
 	const summaryProps = {
 		items: currentOrderItems,
+		createdAt: order.createdAt,
 		onRemoveItem: handleRemoveItem,
 		onUpdateOrderer: handleUpdateOrderer,
 		onSettleItem: handleSettleItem,
@@ -119,6 +120,7 @@ function OrderPage() {
 						<MobileOrderSummary
 							items={currentOrderItems}
 							totalCents={totalCents}
+							createdAt={order.createdAt}
 							onRemoveItem={handleRemoveItem}
 							onUpdateOrderer={handleUpdateOrderer}
 							onSettleItem={handleSettleItem}
