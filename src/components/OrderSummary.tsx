@@ -59,6 +59,17 @@ interface OrderSummaryProps {
 
 export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }: OrderSummaryProps) {
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
+	const prevCountRef = useRef(items.length)
+	const [countBumped, setCountBumped] = useState(false)
+
+	useEffect(() => {
+		if (items.length !== prevCountRef.current) {
+			prevCountRef.current = items.length
+			setCountBumped(true)
+			const id = setTimeout(() => setCountBumped(false), 300)
+			return () => clearTimeout(id)
+		}
+	}, [items.length])
 
 	const grouped = items.reduce<Map<number, { dish: Dish | undefined; items: EnrichedOrderItem[] }>>((acc, item) => {
 		const group = acc.get(item.dishId) ?? {
@@ -75,7 +86,13 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 			<div className="flex shrink-0 items-center gap-2 border-b border-[var(--line)] px-5 py-3">
 				<h2 className="text-base font-semibold text-[var(--sea-ink)]">Order</h2>
 				{items.length > 0 && (
-					<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--lagoon)] text-xs leading-none font-bold text-white">
+					<span
+						key={items.length}
+						className={cn(
+							'flex h-5 w-5 items-center justify-center rounded-full bg-[var(--lagoon)] text-xs leading-none font-bold text-white',
+							countBumped && 'animate-[bounce-badge_0.3s_ease]',
+						)}
+					>
 						{items.length}
 					</span>
 				)}
@@ -85,11 +102,15 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 				<p className="px-5 py-8 text-center text-sm text-[var(--sea-ink-soft)]">No items yet</p>
 			) : (
 				<div className="min-h-0 flex-1 divide-y divide-[var(--line)] overflow-y-auto">
-					{[...grouped.values()].map((group) => {
+					{[...grouped.values()].map((group, gi) => {
 						const qty = group.items.length
 						const lineTotal = group.items.reduce((s, i) => s + i.priceCents, 0)
 						return (
-							<div key={group.items[0]!.dishId} className="px-5 py-3">
+							<div
+								key={group.items[0]!.dishId}
+								className="animate-[slide-in-row_0.25s_ease_both] px-5 py-3"
+								style={{ animationDelay: `${gi * 40}ms` }}
+							>
 								<div className="flex items-center gap-3">
 									<span className="w-7 shrink-0 text-center text-lg font-bold text-[var(--lagoon)] tabular-nums">
 										{qty}x

@@ -96,7 +96,7 @@ src/
 - **PascalCase** file names for components (`OrderRow.tsx`, `DishCard.tsx`)
 - **camelCase** file names for utilities, hooks, non-component modules
 - Components use either **default exports** (`export default function`) or **named exports** (`export function`)
-- Route files always `export const Route = createFileRoute(...)(...)` 
+- Route files always `export const Route = createFileRoute(...)(...)`
 
 ### TypeScript
 
@@ -150,19 +150,19 @@ src/
 
 ## Key Dependencies
 
-| Purpose | Package |
-|---|---|
-| Meta-framework | `@tanstack/react-start` |
-| Routing | `@tanstack/react-router` |
-| Realtime sync | `@rocicorp/zero` |
-| ORM | `drizzle-orm` |
-| Validation | `zod` v4 |
-| Icons | `lucide-react` |
-| Charts | `recharts` |
-| Guided tours | `react-joyride` |
-| CSS | `tailwindcss` v4 |
-| Env vars | `@t3-oss/env-core` |
-| Testing | `vitest` + `@testing-library/react` |
-| Linting | `oxlint` |
-| Formatting | `oxfmt` |
-| Type checking | `tsgo` (TypeScript native preview) |
+| Purpose        | Package                             |
+| -------------- | ----------------------------------- |
+| Meta-framework | `@tanstack/react-start`             |
+| Routing        | `@tanstack/react-router`            |
+| Realtime sync  | `@rocicorp/zero`                    |
+| ORM            | `drizzle-orm`                       |
+| Validation     | `zod` v4                            |
+| Icons          | `lucide-react`                      |
+| Charts         | `recharts`                          |
+| Guided tours   | `react-joyride`                     |
+| CSS            | `tailwindcss` v4                    |
+| Env vars       | `@t3-oss/env-core`                  |
+| Testing        | `vitest` + `@testing-library/react` |
+| Linting        | `oxlint`                            |
+| Formatting     | `oxfmt`                             |
+| Type checking  | `tsgo` (TypeScript native preview)  |

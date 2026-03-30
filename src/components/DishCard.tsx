@@ -1,4 +1,5 @@
 import { Flame, Plus } from 'lucide-react'
+import { useState } from 'react'
 
 import type { Dish } from '#/db/zero-schema'
 import { cn } from '#/lib/utils'
@@ -10,8 +11,17 @@ interface DishCardProps {
 }
 
 export function DishCard({ dish, onAdd, disabled }: DishCardProps) {
+	const [pulsing, setPulsing] = useState(false)
+
+	function handleClick() {
+		if (disabled || pulsing) return
+		onAdd()
+		setPulsing(true)
+		setTimeout(() => setPulsing(false), 400)
+	}
+
 	return (
-		<div className="py-4">
+		<div className={cn('py-4 transition-colors duration-300', pulsing && 'bg-[rgba(220,38,38,0.04)]')}>
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex min-w-0 items-center gap-2">
 					<h3 className="truncate text-base leading-tight font-semibold text-[var(--sea-ink)]">{dish.name}</h3>
@@ -22,11 +32,12 @@ export function DishCard({ dish, onAdd, disabled }: DishCardProps) {
 				</div>
 				<button
 					type="button"
-					onClick={onAdd}
+					onClick={handleClick}
 					disabled={disabled}
 					className={cn(
-						'shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center border-0 cursor-pointer transition-transform hover:scale-110 hover:shadow-[0_4px_14px_rgba(220,38,38,0.3)] active:scale-95',
-						disabled ? 'bg-[var(--line)] cursor-not-allowed opacity-40' : 'bg-[var(--lagoon)] cursor-pointer',
+						'relative shrink-0 h-8 w-8 cursor-pointer rounded-full border-0 text-white flex items-center justify-center transition-transform hover:scale-110 hover:shadow-[0_4px_14px_rgba(220,38,38,0.3)] active:scale-95',
+						disabled ? 'cursor-not-allowed bg-[var(--line)] opacity-40' : 'cursor-pointer bg-[var(--lagoon)]',
+						pulsing && 'animate-[pulse-add_0.4s_ease]',
 					)}
 				>
 					<Plus size={16} strokeWidth={2.5} />

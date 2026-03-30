@@ -22,7 +22,10 @@ export function DishMenu({ dishes, disabled, onAddDish }: DishMenuProps) {
 		if (!query.trim()) return dishes
 		const q = query.toLowerCase()
 		return dishes.filter(
-			(d) => d.name.toLowerCase().includes(q) || d.description.toLowerCase().includes(q) || d.group?.name.toLowerCase().includes(q),
+			(d) =>
+				d.name.toLowerCase().includes(q) ||
+				d.description.toLowerCase().includes(q) ||
+				d.group?.name.toLowerCase().includes(q),
 		)
 	}, [dishes, query])
 
@@ -39,7 +42,10 @@ export function DishMenu({ dishes, disabled, onAddDish }: DishMenuProps) {
 				<span>Popular</span>
 			</div>
 			<div className="relative mb-4">
-				<Search size={14} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-(--sea-ink-soft)" />
+				<Search
+					size={14}
+					className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-(--sea-ink-soft)"
+				/>
 				<input
 					type="text"
 					placeholder="Search dishes…"
