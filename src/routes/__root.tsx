@@ -24,13 +24,45 @@ export const Route = createRootRoute({
 				content: 'width=device-width, initial-scale=1',
 			},
 			{
-				title: 'TanStack Start Starter',
+				title: 'Kimchi Train',
+			},
+			{
+				name: 'theme-color',
+				content: '#dc2626',
+			},
+			{
+				name: 'description',
+				content: 'Order food together with friends',
 			},
 		],
 		links: [
 			{
 				rel: 'stylesheet',
 				href: appCss,
+			},
+			{
+				rel: 'icon',
+				href: '/favicon.ico',
+				sizes: 'any',
+			},
+			{
+				rel: 'icon',
+				href: '/icon.svg',
+				type: 'image/svg+xml',
+			},
+			{
+				rel: 'icon',
+				href: '/favicon-96x96.png',
+				type: 'image/png',
+				sizes: '96x96',
+			},
+			{
+				rel: 'apple-touch-icon',
+				href: '/apple-touch-icon.png',
+			},
+			{
+				rel: 'manifest',
+				href: '/manifest.json',
 			},
 		],
 	}),
