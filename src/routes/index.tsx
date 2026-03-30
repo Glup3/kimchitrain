@@ -13,33 +13,33 @@ export const Route = createFileRoute('/')({ component: App })
 function Nav({ onCreateOrder }: { onCreateOrder: () => void }) {
 	return (
 		<nav className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--surface-strong)] backdrop-blur-md">
-			<div className="mx-auto flex h-14 w-[min(1080px,calc(100%-2rem))] items-center justify-between">
+			<div className="mx-auto flex w-[min(1080px,calc(100%-2rem))] items-center justify-between py-2 md:h-14 md:py-0">
 				<h1 className="font-['Syne',sans-serif] text-lg font-bold tracking-tight text-[var(--sea-ink)]">
 					Kimchi Train
 				</h1>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-1.5 md:gap-2">
 					<ThemeToggle />
 					<Link
 						to="/archive"
-						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
+						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-2 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)] md:px-3"
 					>
 						<Archive size={16} strokeWidth={2.5} />
-						Archive
+						<span className="hidden md:inline">Archive</span>
 					</Link>
 					<Link
 						to="/analytics"
-						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)]"
+						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-2 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)] md:px-3"
 					>
 						<BarChart3 size={16} strokeWidth={2.5} />
-						Analytics
+						<span className="hidden md:inline">Analytics</span>
 					</Link>
 					<button
 						type="button"
 						onClick={onCreateOrder}
-						className="flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-[var(--lagoon)] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+						className="flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-[var(--lagoon)] px-3 py-2 text-sm font-medium text-white hover:brightness-110 md:px-4"
 					>
 						<Plus size={16} strokeWidth={2.5} />
-						New Order
+						<span className="hidden md:inline">New Order</span>
 					</button>
 				</div>
 			</div>
