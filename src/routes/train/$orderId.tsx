@@ -109,8 +109,8 @@ function OrderPage() {
 			/>
 
 			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">
-				<div className="flex flex-col gap-8 lg:flex-row">
-					<div className="flex min-w-0 flex-1 flex-col gap-4 lg:gap-0">
+				<div className="flex flex-col gap-8 md:flex-row">
+					<div className="flex min-w-0 flex-1 flex-col gap-4 md:gap-0">
 						<MobileOrderSummary
 							items={currentOrderItems}
 							totalCents={totalCents}
@@ -121,7 +121,7 @@ function OrderPage() {
 						<DishMenu dishes={dishesWithGroup} disabled={isCompleted} onAddDish={handleAddDish} />
 					</div>
 
-					<aside className="hidden w-80 shrink-0 lg:block">
+					<aside className="hidden w-80 shrink-0 md:block">
 						<div data-tour="order-summary" className="sticky top-20">
 							<OrderSummary {...summaryProps} />
 						</div>

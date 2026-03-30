@@ -18,7 +18,7 @@ export function MobileOrderSummary({ items, totalCents, ...summaryRest }: Mobile
 	const hasItems = items.length > 0
 
 	return (
-		<div className="lg:hidden">
+		<div className="md:hidden">
 			{hasItems && (
 				<>
 					<button
