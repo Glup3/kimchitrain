@@ -71,8 +71,8 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 	}, new Map())
 
 	return (
-		<div className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]">
-			<div className="flex items-center gap-2 border-b border-[var(--line)] px-5 py-3">
+		<div className="flex max-h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-[4px]">
+			<div className="flex shrink-0 items-center gap-2 border-b border-[var(--line)] px-5 py-3">
 				<h2 className="text-base font-semibold text-[var(--sea-ink)]">Order</h2>
 				{items.length > 0 && (
 					<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--lagoon)] text-xs leading-none font-bold text-white">
@@ -84,7 +84,7 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 			{items.length === 0 ? (
 				<p className="px-5 py-8 text-center text-sm text-[var(--sea-ink-soft)]">No items yet</p>
 			) : (
-				<div className="divide-y divide-[var(--line)]">
+				<div className="min-h-0 flex-1 divide-y divide-[var(--line)] overflow-y-auto">
 					{[...grouped.values()].map((group) => {
 						const qty = group.items.length
 						const lineTotal = group.items.reduce((s, i) => s + i.priceCents, 0)
@@ -128,13 +128,14 @@ export function OrderSummary({ items, onRemoveItem, onUpdateOrderer, readOnly }:
 			)}
 
 			{items.length > 0 && (
-				<PersonBreakdown items={items} />
-			)}
-
-			{items.length > 0 && (
-				<div className="flex items-center justify-between border-t border-[var(--line)] px-5 py-3">
-					<span className="text-sm font-semibold text-[var(--sea-ink)]">Total</span>
-					<span className="text-base font-bold text-[var(--palm)] tabular-nums">€{(totalCents / 100).toFixed(2)}</span>
+				<div className="shrink-0">
+					<PersonBreakdown items={items} />
+					<div className="flex items-center justify-between border-t border-[var(--line)] px-5 py-3">
+						<span className="text-sm font-semibold text-[var(--sea-ink)]">Total</span>
+						<span className="text-base font-bold text-[var(--palm)] tabular-nums">
+							€{(totalCents / 100).toFixed(2)}
+						</span>
+					</div>
 				</div>
 			)}
 		</div>
