@@ -13,12 +13,13 @@ export const OrderShareCard = forwardRef<HTMLDivElement, OrderShareCardProps>(fu
 	ref,
 ) {
 	const grouped = useMemo(() => {
-		const map = new Map<string, { name: string; qty: number; lineTotal: number }>()
+		const map = new Map<string, { name: string; qty: number; lineTotal: number; orderers: string[] }>()
 		for (const item of items) {
 			const name = item.dish?.name ?? 'Unknown'
-			const entry = map.get(name) ?? { name, qty: 0, lineTotal: 0 }
+			const entry = map.get(name) ?? { name, qty: 0, lineTotal: 0, orderers: [] as string[] }
 			entry.qty += 1
 			entry.lineTotal += item.priceCents
+			entry.orderers.push(item.orderer.trim() || 'Unassigned')
 			map.set(name, entry)
 		}
 		return [...map.values()]
@@ -85,19 +86,34 @@ export const OrderShareCard = forwardRef<HTMLDivElement, OrderShareCardProps>(fu
 
 			<div style={{ borderTop: '1px solid rgba(28,25,23,0.08)', paddingTop: 16 }}>
 				{grouped.map((g) => (
-					<div
-						key={g.name}
-						style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}
-					>
-						<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-							<span style={{ fontSize: 15, fontWeight: 700, color: '#dc2626', width: 28, textAlign: 'center' }}>
-								{g.qty}x
+					<div key={g.name} style={{ padding: '6px 0' }}>
+						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+								<span style={{ fontSize: 15, fontWeight: 700, color: '#dc2626', width: 28, textAlign: 'center' }}>
+									{g.qty}x
+								</span>
+								<span style={{ fontSize: 14, fontWeight: 600 }}>{g.name}</span>
+							</div>
+							<span style={{ fontSize: 14, color: '#d97706', fontVariantNumeric: 'tabular-nums' }}>
+								€{(g.lineTotal / 100).toFixed(2)}
 							</span>
-							<span style={{ fontSize: 14, fontWeight: 600 }}>{g.name}</span>
 						</div>
-						<span style={{ fontSize: 14, color: '#d97706', fontVariantNumeric: 'tabular-nums' }}>
-							€{(g.lineTotal / 100).toFixed(2)}
-						</span>
+						<div style={{ marginLeft: 38, display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 3 }}>
+							{g.orderers.map((orderer, i) => (
+								<span
+									key={`${orderer}-${i}`}
+									style={{
+										fontSize: 11,
+										padding: '1px 6px',
+										borderRadius: 4,
+										backgroundColor: 'rgba(28,25,23,0.05)',
+										color: '#78716c',
+									}}
+								>
+									{orderer}
+								</span>
+							))}
+						</div>
 					</div>
 				))}
 			</div>
