@@ -1,6 +1,7 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Archive, BarChart3, Plus } from 'lucide-react'
+import { useMemo } from 'react'
 import { ulid } from 'ulid'
 
 import OrderRow from '#/components/OrderRow'
@@ -55,7 +56,16 @@ function App() {
 	const zero = useZero()
 	const navigate = useNavigate()
 	const [openOrders, openResult] = useQuery(queries.orders.openWithItems())
-	const [completedOrders, completedResult] = useQuery(queries.orders.recentCompletedWithItems())
+	const [completedOrders, completedResult] = useQuery(queries.orders.completedWithItems())
+
+	const unsettledOrders = useMemo(
+		() => completedOrders.filter((o) => o.items.some((i) => !i.settled)),
+		[completedOrders],
+	)
+	const settledOrders = useMemo(
+		() => completedOrders.filter((o) => o.items.length > 0 && o.items.every((i) => i.settled)).slice(0, 5),
+		[completedOrders],
+	)
 
 	function handleCreateOrder() {
 		const id = ulid()
@@ -92,8 +102,18 @@ function App() {
 		<>
 			<Nav onCreateOrder={handleCreateOrder} />
 			<PageLayout>
-				{openOrders.length > 0 && (
+				{unsettledOrders.length > 0 && (
 					<section>
+						<h2 className="mb-2 text-sm font-semibold tracking-wide text-[var(--palm)] uppercase">Awaiting payment</h2>
+						<div className="divide-y divide-[var(--line)]">
+							{unsettledOrders.map((order) => (
+								<OrderRow key={order.id} order={order} />
+							))}
+						</div>
+					</section>
+				)}
+				{openOrders.length > 0 && (
+					<section className={unsettledOrders.length > 0 ? 'mt-8' : ''}>
 						<h2 className="mb-2 text-sm font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">
 							Open Orders
 						</h2>
@@ -104,13 +124,13 @@ function App() {
 						</div>
 					</section>
 				)}
-				{completedOrders.length > 0 && (
-					<section className={openOrders.length > 0 ? 'mt-8' : ''}>
+				{settledOrders.length > 0 && (
+					<section className={unsettledOrders.length > 0 || openOrders.length > 0 ? 'mt-8' : ''}>
 						<h2 className="mb-2 text-sm font-semibold tracking-wide text-[var(--sea-ink-soft)] uppercase">
 							Recently Completed
 						</h2>
 						<div className="divide-y divide-[var(--line)]">
-							{completedOrders.map((order) => (
+							{settledOrders.map((order) => (
 								<OrderRow key={order.id} order={order} />
 							))}
 						</div>

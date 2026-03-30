@@ -17,9 +17,6 @@ export const queries = defineQueries({
 		openWithItems: defineQuery(() =>
 			zql.orders.where('completed', false).orderBy('createdAt', 'desc').related('items'),
 		),
-		recentCompletedWithItems: defineQuery(() =>
-			zql.orders.where('completed', true).orderBy('createdAt', 'desc').limit(5).related('items'),
-		),
 		completedWithItems: defineQuery(() =>
 			zql.orders.where('completed', true).orderBy('createdAt', 'desc').related('items'),
 		),
