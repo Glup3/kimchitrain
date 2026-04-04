@@ -50,3 +50,11 @@ jobs:
             git.glup3.dev/${{ github.repository }}:${{ github.sha }}
           cache-from: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache
           cache-to: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache,mode=max
+
+      - name: trigger coolify deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            ${{ secrets.COOLIFY_WEBHOOK_URL }}
