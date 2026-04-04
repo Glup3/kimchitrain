@@ -29,7 +29,7 @@ jobs:
   docker:
     name: build & push image
     needs: check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
 
@@ -44,12 +44,14 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           context: .
+          platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             git.glup3.dev/${{ github.repository }}:latest
-            git.glup3.dev/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache
-          cache-to: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache,mode=max
+            git.glup3.dev/${{ github.repository }}:latest-arm64
+            git.glup3.dev/${{ github.repository }}:${{ github.sha }}-arm64
+          cache-from: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache-arm64
+          cache-to: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache-arm64,mode=max
 
       - name: trigger coolify deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
