@@ -48,6 +48,7 @@ jobs:
         with:
           name: output
           path: .output
+          include-hidden-files: true
 
   docker:
     name: build & push image
