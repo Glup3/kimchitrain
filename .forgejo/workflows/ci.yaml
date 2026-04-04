@@ -44,11 +44,10 @@ jobs:
         env:
           VITE_ZERO_SERVER: ${{ secrets.VITE_ZERO_SERVER }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: output
           path: .output
-          include-hidden-files: true
 
   docker:
     name: build & push image
@@ -57,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
         with:
           name: output
           path: .output
