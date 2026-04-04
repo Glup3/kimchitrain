@@ -13,7 +13,7 @@ export const env = createEnv({
 	clientPrefix: 'VITE_',
 
 	client: {
-		VITE_ZERO_SERVER: z.string().default('http://localhost:4848'),
+		VITE_ZERO_SERVER: z.string(),
 	},
 
 	/**
