@@ -14,17 +14,20 @@ echo "Deployment UUID: $DEPLOY_UUID"
 ELAPSED=0
 
 while [ $ELAPSED -lt $TIMEOUT ]; do
-  STATUS=$(curl -sf \
+  RESPONSE=$(curl -s -w "\n%{http_code}" \
     -H "Authorization: Bearer $COOLIFY_TOKEN" \
-    "${COOLIFY_URL}/api/v1/deployments/$DEPLOY_UUID" \
-    | jq -r '.status')
+    "${COOLIFY_URL}/api/v1/deployments/$DEPLOY_UUID") || true
 
-  echo "Status: $STATUS (${ELAPSED}s elapsed)"
+  HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+  BODY=$(echo "$RESPONSE" | sed '$d')
+  STATUS=$(echo "$BODY" | jq -r '.status // empty')
 
-  if [ "$STATUS" = "finished" ]; then
+  echo "Status: ${STATUS:-pending} (HTTP $HTTP_CODE, ${ELAPSED}s elapsed)"
+
+  if [ "$HTTP_CODE" = "200" ] && [ "$STATUS" = "finished" ]; then
     echo "Deploy succeeded"
     exit 0
-  elif [ "$STATUS" = "failed" ] || [ "$STATUS" = "cancelled-by-user" ]; then
+  elif [ "$HTTP_CODE" = "200" ] && { [ "$STATUS" = "failed" ] || [ "$STATUS" = "cancelled-by-user" ]; }; then
     echo "Deploy $STATUS"
     exit 1
   fi
