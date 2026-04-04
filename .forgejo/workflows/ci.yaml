@@ -7,7 +7,7 @@ on:
 jobs:
   check:
     name: fmt / lint / typecheck
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
 
@@ -28,7 +28,7 @@ jobs:
   build:
     name: build
     needs: check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
 
@@ -85,7 +85,7 @@ jobs:
   migrate:
     name: migrate
     needs: docker
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
 
@@ -104,13 +104,15 @@ jobs:
       - run: echo "Migration completed successfully"
 
   deploy:
-    name: trigger coolify deploy
+    name: deploy to coolify
     needs: [docker, migrate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
-      - run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            ${{ secrets.COOLIFY_WEBHOOK_URL }}
+      - uses: actions/checkout@v6
+
+      - run: bash scripts/deploy-coolify.sh
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
