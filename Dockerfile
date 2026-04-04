@@ -8,6 +8,7 @@ COPY package.json package-lock.json /app
 RUN npm ci
 
 COPY . /app
+ARG VITE_ZERO_SERVER
 RUN npm run build
 
 ###
