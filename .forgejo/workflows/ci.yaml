@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-  pull_request:
 
 jobs:
   check:
@@ -26,12 +25,41 @@ jobs:
 
       - run: npm run lint:ts
 
+  build:
+    name: build
+    needs: check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          VITE_ZERO_SERVER: ${{ secrets.VITE_ZERO_SERVER }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: .output
+
   docker:
     name: build & push image
-    needs: check
+    needs: build
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: output
+          path: .output
 
       - uses: docker/setup-buildx-action@v4
 
@@ -46,7 +74,6 @@ jobs:
           context: .
           platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          build-args: VITE_ZERO_SERVER=${{ secrets.VITE_ZERO_SERVER }}
           tags: |
             git.glup3.dev/${{ github.repository }}:latest
             git.glup3.dev/${{ github.repository }}:latest-arm64
@@ -54,9 +81,33 @@ jobs:
           cache-from: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache-arm64
           cache-to: type=registry,ref=git.glup3.dev/${{ github.repository }}:buildcache-arm64,mode=max
 
-      - name: trigger coolify deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
+  # migrate:
+  #   name: migrate
+  #   needs: docker
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #
+  #     - uses: actions/cache@v5
+  #       with:
+  #         path: ~/.npm
+  #         key: npm-${{ hashFiles('package-lock.json') }}
+  #         restore-keys: npm-
+  #
+  #     - run: npm ci
+  #
+  #     - run: npx drizzle-kit migrate
+  #       env:
+  #         ZERO_UPSTREAM_DB: ${{ secrets.ZERO_UPSTREAM_DB }}
+
+  deploy:
+    name: trigger coolify deploy
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
             -H "Content-Type: application/json" \
