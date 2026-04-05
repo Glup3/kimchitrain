@@ -12,7 +12,16 @@ const config = defineConfig({
 		tsconfigPaths({ projects: ['./tsconfig.json'] }),
 		tailwindcss(),
 		tanstackStart(),
-		nitro(),
+		nitro({
+			serverDir: './src/server/',
+			experimental: {
+				tasks: true,
+				vite: {},
+			},
+			scheduledTasks: {
+				'*/15 * * * *': ['orders:cleanup-empty'],
+			},
+		}),
 		viteReact(),
 	],
 })
