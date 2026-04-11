@@ -1,6 +1,6 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { DishMenu } from '#/components/DishMenu'
 import { MobileOrderSummary } from '#/components/MobileOrderSummary'
@@ -31,6 +31,8 @@ function OrderPage() {
 	const [orderRows, orderResult] = useQuery(queries.orders.byIdWithItemsAndDishes(orderId))
 	const [defaultName, setDefaultName] = useState(getDefaultName)
 	const [copied, setCopied] = useState(false)
+	const [nameRequired, setNameRequired] = useState(false)
+	const nameInputRef = useRef<HTMLInputElement>(null)
 
 	const { Tour, restartTour } = useOrderTour()
 
@@ -58,18 +60,31 @@ function OrderPage() {
 
 	function saveDefaultName(name: string) {
 		setDefaultName(name)
+		if (name.trim()) {
+			setNameRequired(false)
+		}
 		try {
 			localStorage.setItem(NAME_KEY, name)
 		} catch {}
 	}
 
 	function handleAddDish(dishId: number, priceCents: number) {
+		const orderer = defaultName.trim()
+
+		if (!orderer) {
+			setNameRequired(true)
+			nameInputRef.current?.focus()
+			nameInputRef.current?.select()
+			return
+		}
+
+		setNameRequired(false)
 		zero.mutate(
 			mutators.orderItems.add({
 				dishId,
 				orderId,
 				priceCents,
-				orderer: defaultName,
+				orderer,
 			}),
 		)
 	}
@@ -112,6 +127,8 @@ function OrderPage() {
 				onRestartTour={restartTour}
 				defaultName={defaultName}
 				onNameChange={saveDefaultName}
+				nameRequired={nameRequired}
+				nameInputRef={nameInputRef}
 			/>
 
 			<div className="mx-auto w-[min(1080px,calc(100%-2rem))] py-8">

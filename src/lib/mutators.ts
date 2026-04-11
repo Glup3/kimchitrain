@@ -24,7 +24,7 @@ export const mutators = defineMutators({
 				dishId: z.number(),
 				orderId: z.string(),
 				priceCents: z.number(),
-				orderer: z.string(),
+				orderer: z.string().trim().min(1),
 			}),
 			async ({ tx, args }) => {
 				await tx.mutate.orderItems.insert({
@@ -37,12 +37,15 @@ export const mutators = defineMutators({
 				})
 			},
 		),
-		updateOrderer: defineMutator(z.object({ id: z.string(), orderer: z.string() }), async ({ tx, args }) => {
-			await tx.mutate.orderItems.update({
-				id: args.id,
-				orderer: args.orderer,
-			})
-		}),
+		updateOrderer: defineMutator(
+			z.object({ id: z.string(), orderer: z.string().trim().min(1) }),
+			async ({ tx, args }) => {
+				await tx.mutate.orderItems.update({
+					id: args.id,
+					orderer: args.orderer,
+				})
+			},
+		),
 		setSettled: defineMutator(z.object({ id: z.string(), settled: z.boolean() }), async ({ tx, args }) => {
 			await tx.mutate.orderItems.update({
 				id: args.id,

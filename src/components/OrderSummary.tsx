@@ -16,16 +16,27 @@ function OrdererInput({
 	readOnly?: boolean
 }) {
 	const [draft, setDraft] = useState(value)
+	const [invalid, setInvalid] = useState(false)
 	const ref = useRef<HTMLInputElement>(null)
 
 	useEffect(() => {
 		if (document.activeElement !== ref.current) {
 			setDraft(value)
+			setInvalid(false)
 		}
 	}, [value])
 
 	function commit() {
-		if (draft !== value) onCommit(draft)
+		const nextValue = draft.trim()
+
+		if (!nextValue) {
+			setInvalid(true)
+			setDraft(value)
+			return
+		}
+
+		setInvalid(false)
+		if (nextValue !== value) onCommit(nextValue)
 	}
 
 	return (
@@ -33,7 +44,12 @@ function OrdererInput({
 			ref={ref}
 			type="text"
 			value={draft}
-			onChange={(e) => setDraft(e.target.value)}
+			onChange={(e) => {
+				setDraft(e.target.value)
+				if (e.target.value.trim()) {
+					setInvalid(false)
+				}
+			}}
 			onBlur={commit}
 			onKeyDown={(e) => {
 				if (e.key === 'Enter') {
@@ -42,8 +58,10 @@ function OrdererInput({
 			}}
 			placeholder="Name…"
 			disabled={readOnly}
+			aria-invalid={invalid}
 			className={cn(
-				'flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b border-[var(--line)] text-[var(--sea-ink)] outline-none transition-all placeholder:opacity-50 placeholder:text-[var(--sea-ink-soft)] focus:border-[var(--lagoon)] focus:shadow-[0_0_0_2px_rgba(220,38,38,0.15)]',
+				'flex-1 min-w-0 text-sm px-2 py-1 rounded bg-transparent border-b text-[var(--sea-ink)] outline-none transition-all placeholder:opacity-50 placeholder:text-[var(--sea-ink-soft)] focus:border-[var(--lagoon)] focus:shadow-[0_0_0_2px_rgba(220,38,38,0.15)]',
+				invalid ? 'border-red-500 text-red-700 placeholder:text-red-400' : 'border-[var(--line)]',
 				readOnly && 'opacity-60 cursor-default border-transparent',
 			)}
 		/>

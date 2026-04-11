@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Check, CheckCircle2, Circle, HelpCircle, Link2, User } from 'lucide-react'
+import type { RefObject } from 'react'
 
 import { formatOrderDate } from '#/lib/format'
 import { cn } from '#/lib/utils'
@@ -14,6 +15,8 @@ interface OrderNavProps {
 	onRestartTour: () => void
 	defaultName: string
 	onNameChange: (name: string) => void
+	nameRequired: boolean
+	nameInputRef: RefObject<HTMLInputElement | null>
 }
 
 export function OrderNav({
@@ -26,6 +29,8 @@ export function OrderNav({
 	onRestartTour,
 	defaultName,
 	onNameChange,
+	nameRequired,
+	nameInputRef,
 }: OrderNavProps) {
 	return (
 		<nav className="sticky top-0 z-40 border-b border-(--line) bg-(--surface-strong) backdrop-blur-md">
@@ -44,15 +49,30 @@ export function OrderNav({
 					)}
 				</div>
 				<div className="flex items-center gap-1.5 lg:ml-auto">
-					<div data-tour="name-input" className="flex flex-1 items-center gap-1.5 lg:flex-initial">
-						<User size={14} className="text-(--sea-ink-soft)" />
-						<input
-							type="text"
-							value={defaultName}
-							onChange={(e) => onNameChange(e.target.value)}
-							placeholder="Your name"
-							className="w-full border-b border-(--line) bg-transparent py-1 text-sm text-(--sea-ink) outline-none placeholder:text-(--sea-ink-soft) placeholder:opacity-50 focus:border-(--lagoon) lg:w-28"
-						/>
+					<div data-tour="name-input" className="flex flex-1 flex-col gap-1 lg:flex-initial">
+						<div
+							className={cn(
+								'flex items-center gap-1.5 rounded-md transition-[box-shadow,border-color,background-color]',
+								nameRequired && 'bg-red-500/5 ring-2 ring-red-500/20',
+							)}
+						>
+							<User size={14} className={cn('text-(--sea-ink-soft)', nameRequired && 'text-red-600')} />
+							<input
+								ref={nameInputRef}
+								type="text"
+								value={defaultName}
+								onChange={(e) => onNameChange(e.target.value)}
+								placeholder="Your name"
+								aria-invalid={nameRequired}
+								className={cn(
+									'w-full border-b bg-transparent py-1 text-sm text-(--sea-ink) outline-none placeholder:text-(--sea-ink-soft) placeholder:opacity-50 focus:border-(--lagoon) lg:w-28',
+									nameRequired
+										? 'border-red-500 text-red-700 placeholder:text-red-400 focus:border-red-500'
+										: 'border-(--line)',
+								)}
+							/>
+						</div>
+						{nameRequired && <p className="text-xs font-medium text-red-600">Enter your name</p>}
 					</div>
 					<button
 						type="button"
@@ -66,7 +86,7 @@ export function OrderNav({
 						)}
 					>
 						{isCompleted ? <CheckCircle2 size={13} /> : <Circle size={13} />}
-						<span className="hidden lg:inline">{isCompleted ? 'Completed' : 'Complete'}</span>
+						<span className="hidden lg:inline">{isCompleted ? 'Completed' : 'Order'}</span>
 					</button>
 					<button
 						type="button"
