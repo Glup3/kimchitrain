@@ -10,6 +10,11 @@
 			"source": "gilbarbara/react-joyride",
 			"sourceType": "github",
 			"computedHash": "6a28b20c1fc4cc8f6e4ea7d9229a0c7f3dc196e0095c48271c5ebec9dd4ff924"
+		},
+		"remotion-best-practices": {
+			"source": "remotion-dev/skills",
+			"sourceType": "github",
+			"computedHash": "df654933e451556147e384078c3fbdbac997cb0fe4d2f2db7642000c239304c5"
 		}
 	}
 }

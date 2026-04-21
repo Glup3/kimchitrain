@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainOrderIdRouteImport } from './routes/train/$orderId'
 import { Route as ApiQueryRouteImport } from './routes/api.query'
 import { Route as ApiMutateRouteImport } from './routes/api.mutate'
+import { Route as ApiOrdersOrderIdSummaryVideoRouteImport } from './routes/api.orders.$orderId.summary-video'
 
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
@@ -46,6 +47,12 @@ const ApiMutateRoute = ApiMutateRouteImport.update({
   path: '/api/mutate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOrdersOrderIdSummaryVideoRoute =
+  ApiOrdersOrderIdSummaryVideoRouteImport.update({
+    id: '/api/orders/$orderId/summary-video',
+    path: '/api/orders/$orderId/summary-video',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
+  '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +70,7 @@ export interface FileRoutesByTo {
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
+  '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +80,7 @@ export interface FileRoutesById {
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
   '/train/$orderId': typeof TrainOrderIdRoute
+  '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
     | '/api/mutate'
     | '/api/query'
     | '/train/$orderId'
+    | '/api/orders/$orderId/summary-video'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '/api/mutate'
     | '/api/query'
     | '/train/$orderId'
+    | '/api/orders/$orderId/summary-video'
   id:
     | '__root__'
     | '/'
@@ -97,6 +109,7 @@ export interface FileRouteTypes {
     | '/api/mutate'
     | '/api/query'
     | '/train/$orderId'
+    | '/api/orders/$orderId/summary-video'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +119,7 @@ export interface RootRouteChildren {
   ApiMutateRoute: typeof ApiMutateRoute
   ApiQueryRoute: typeof ApiQueryRoute
   TrainOrderIdRoute: typeof TrainOrderIdRoute
+  ApiOrdersOrderIdSummaryVideoRoute: typeof ApiOrdersOrderIdSummaryVideoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMutateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/orders/$orderId/summary-video': {
+      id: '/api/orders/$orderId/summary-video'
+      path: '/api/orders/$orderId/summary-video'
+      fullPath: '/api/orders/$orderId/summary-video'
+      preLoaderRoute: typeof ApiOrdersOrderIdSummaryVideoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -162,6 +183,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMutateRoute: ApiMutateRoute,
   ApiQueryRoute: ApiQueryRoute,
   TrainOrderIdRoute: TrainOrderIdRoute,
+  ApiOrdersOrderIdSummaryVideoRoute: ApiOrdersOrderIdSummaryVideoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -13,6 +13,7 @@ interface MobileOrderSummaryProps {
 	onUpdateOrderer: (id: string, orderer: string) => void
 	onSettleItem: (id: string, settled: boolean) => void
 	readOnly: boolean
+	downloadVideoUrl?: string
 }
 
 export function MobileOrderSummary({ items, totalCents, ...summaryRest }: MobileOrderSummaryProps) {

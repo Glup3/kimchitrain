@@ -1,4 +1,4 @@
-import { Check, Copy, Minus, User } from 'lucide-react'
+import { Check, Copy, Download, Minus, User } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { OrderShareCard } from '#/components/OrderShareCard'
@@ -77,6 +77,7 @@ interface OrderSummaryProps {
 	onUpdateOrderer: (id: string, orderer: string) => void
 	onSettleItem: (id: string, settled: boolean) => void
 	readOnly?: boolean
+	downloadVideoUrl?: string
 }
 
 export function OrderSummary({
@@ -86,6 +87,7 @@ export function OrderSummary({
 	onUpdateOrderer,
 	onSettleItem,
 	readOnly,
+	downloadVideoUrl,
 }: OrderSummaryProps) {
 	const totalCents = items.reduce((sum, item) => sum + item.priceCents, 0)
 	const prevCountRef = useRef(items.length)
@@ -189,19 +191,32 @@ export function OrderSummary({
 					</div>
 					{readOnly && (
 						<div className="border-t border-[var(--line)] px-5 py-3">
-							<button
-								type="button"
-								onClick={() => void copyImage()}
-								className={cn(
-									'flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all',
-									copied
-										? 'border-[var(--lagoon)] bg-[var(--lagoon)] text-white'
-										: 'border-[var(--line)] bg-[var(--surface-strong)] text-[var(--sea-ink)] hover:bg-[var(--link-bg-hover)]',
-								)}
-							>
-								<Copy size={14} />
-								{copied ? 'Copied!' : 'Copy as image'}
-							</button>
+							<div className="flex flex-col gap-2">
+								<button
+									type="button"
+									onClick={() => void copyImage()}
+									className={cn(
+										'flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all',
+										copied
+											? 'border-[var(--lagoon)] bg-[var(--lagoon)] text-white'
+											: 'border-[var(--line)] bg-[var(--surface-strong)] text-[var(--sea-ink)] hover:bg-[var(--link-bg-hover)]',
+									)}
+								>
+									<Copy size={14} />
+									{copied ? 'Copied!' : 'Copy as image'}
+								</button>
+								{downloadVideoUrl ? (
+									<form method="post" action={downloadVideoUrl}>
+										<button
+											type="submit"
+											className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-2.5 text-sm font-medium text-[var(--sea-ink)] transition-all hover:bg-[var(--link-bg-hover)]"
+										>
+											<Download size={14} />
+											Download MP4 summary
+										</button>
+									</form>
+								) : null}
+							</div>
 						</div>
 					)}
 				</div>
