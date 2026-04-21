@@ -12,7 +12,7 @@ const FPS = 30
 const VIDEO_WIDTH = 1280
 const TRAIN_PADDING = 180
 const TRAIN_SPEED = 5.4
-const LOCO_WIDTH = 220
+const LOCO_WIDTH = 280
 const CARRIAGE_WIDTH = 250
 const CARRIAGE_GAP = 20
 
@@ -263,18 +263,18 @@ function Locomotive({ frame }: { frame: number }) {
 			style={{
 				position: 'relative',
 				width: LOCO_WIDTH,
-				height: 250,
+				height: 300,
 				transform: `translateY(${bob}px) scaleX(-1)`,
 			}}
 		>
 			<div
 				style={{
 					position: 'absolute',
-					left: 22,
-					top: 110,
-					width: 122,
-					height: 74,
-					borderRadius: 20,
+					left: 28,
+					top: 134,
+					width: 154,
+					height: 88,
+					borderRadius: 24,
 					background: COLORS.lagoon,
 					boxShadow: '0 10px 24px rgba(220, 38, 38, 0.16)',
 				}}
@@ -282,11 +282,11 @@ function Locomotive({ frame }: { frame: number }) {
 			<div
 				style={{
 					position: 'absolute',
-					left: 96,
-					top: 82,
-					width: 96,
-					height: 102,
-					borderRadius: '24px 28px 20px 20px',
+					left: 122,
+					top: 100,
+					width: 118,
+					height: 122,
+					borderRadius: '28px 32px 22px 22px',
 					background: COLORS.surfaceStrong,
 					border: `1px solid ${COLORS.line}`,
 				}}
@@ -294,11 +294,11 @@ function Locomotive({ frame }: { frame: number }) {
 				<div
 					style={{
 						position: 'absolute',
-						left: 14,
-						top: 14,
-						width: 28,
-						height: 28,
-						borderRadius: 10,
+						left: 18,
+						top: 18,
+						width: 34,
+						height: 34,
+						borderRadius: 12,
 						background: 'rgba(220, 38, 38, 0.14)',
 					}}
 				/>
@@ -306,23 +306,23 @@ function Locomotive({ frame }: { frame: number }) {
 			<div
 				style={{
 					position: 'absolute',
-					left: 156,
-					top: 114,
-					width: 54,
-					height: 54,
+					left: 196,
+					top: 142,
+					width: 62,
+					height: 62,
 					borderRadius: '50%',
 					background: COLORS.palm,
-					boxShadow: '0 0 0 8px rgba(217, 119, 6, 0.12)',
+					boxShadow: '0 0 0 10px rgba(217, 119, 6, 0.12)',
 				}}
 			/>
 			<div
 				style={{
 					position: 'absolute',
-					left: 32,
-					top: 72,
-					width: 34,
-					height: 60,
-					borderRadius: 12,
+					left: 38,
+					top: 88,
+					width: 42,
+					height: 74,
+					borderRadius: 14,
 					background: COLORS.seaInk,
 					opacity: 0.18,
 				}}
@@ -330,17 +330,17 @@ function Locomotive({ frame }: { frame: number }) {
 			<div
 				style={{
 					position: 'absolute',
-					left: 12,
-					top: 170,
-					width: 188,
-					height: 18,
+					left: 18,
+					top: 216,
+					width: 230,
+					height: 20,
 					borderRadius: 999,
 					background: COLORS.seaInk,
 					opacity: 0.88,
 				}}
 			/>
-			<Wheel x={24} y={166} radius={26} frame={frame} />
-			<Wheel x={114} y={166} radius={26} frame={frame} />
+			<Wheel x={34} y={208} radius={30} frame={frame} />
+			<Wheel x={146} y={208} radius={30} frame={frame} />
 		</div>
 	)
 }
