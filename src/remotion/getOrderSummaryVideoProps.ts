@@ -4,14 +4,7 @@ import { db } from '#/db'
 
 import type { OrderSummaryVideoProps } from './OrderSummaryVideo'
 
-export interface OrderSummaryVideoOverrides {
-	title?: string
-}
-
-export async function getOrderSummaryVideoProps(
-	orderId: string,
-	overrides: OrderSummaryVideoOverrides = {},
-): Promise<OrderSummaryVideoProps> {
+export async function getOrderSummaryVideoProps(orderId: string): Promise<OrderSummaryVideoProps> {
 	const order = await db.query.orders.findFirst({
 		where: (orders) => eq(orders.id, orderId),
 		with: {
@@ -50,7 +43,7 @@ export async function getOrderSummaryVideoProps(
 		.sort((a, b) => b.totalCents - a.totalCents || a.name.localeCompare(b.name))
 
 	return {
-		title: overrides.title ?? 'Kimchi Train',
+		orderId: orderId,
 		totalCents: order.items.reduce((sum, item) => sum + item.priceCents, 0),
 		orderers: sortedOrderers,
 	}

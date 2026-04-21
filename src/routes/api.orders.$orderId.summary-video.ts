@@ -14,6 +14,21 @@ interface RenderScriptResult {
 	filename: string
 }
 
+function formatDuration(durationMs: number) {
+	if (durationMs < 1000) {
+		return `${durationMs}ms`
+	}
+
+	const seconds = durationMs / 1000
+	if (seconds < 60) {
+		return `${seconds.toFixed(1)}s`
+	}
+
+	const minutes = Math.floor(seconds / 60)
+	const remainingSeconds = seconds % 60
+	return `${minutes}m ${remainingSeconds.toFixed(1)}s`
+}
+
 function runRenderScript(inputProps: OrderSummaryVideoProps) {
 	return new Promise<RenderScriptResult>((resolve, reject) => {
 		const child = spawn(
@@ -59,30 +74,45 @@ function runRenderScript(inputProps: OrderSummaryVideoProps) {
 export const Route = createFileRoute('/api/orders/$orderId/summary-video')({
 	server: {
 		handlers: {
-			POST: async ({ request, params }) => {
-				const url = new URL(request.url)
+			POST: async ({ params }) => {
 				const orderId = params.orderId
+				const startedAt = Date.now()
 
-				const inputProps = await getOrderSummaryVideoProps(orderId, {
-					title: url.searchParams.get('title') ?? undefined,
-				})
-				const artifact = await runRenderScript(inputProps)
-				const bytes = await readFile(artifact.filePath).catch(() => null)
+				console.log(`[summary-video] render started for order ${orderId}`)
 
-				if (!bytes) {
-					return new Response('Rendered file is missing', { status: 404 })
+				try {
+					const inputProps = await getOrderSummaryVideoProps(orderId)
+					const artifact = await runRenderScript(inputProps)
+					const bytes = await readFile(artifact.filePath).catch(() => null)
+
+					if (!bytes) {
+						console.log(
+							`[summary-video] render finished for order ${orderId} in ${formatDuration(Date.now() - startedAt)}, but file was missing`,
+						)
+						return new Response('Rendered file is missing', { status: 404 })
+					}
+
+					await unlink(artifact.filePath).catch(() => {})
+
+					console.log(
+						`[summary-video] render finished for order ${orderId} in ${formatDuration(Date.now() - startedAt)}`,
+					)
+
+					return new Response(bytes, {
+						status: 200,
+						headers: {
+							'Content-Type': 'video/mp4',
+							'Content-Disposition': `attachment; filename="${artifact.filename}"`,
+							'Cache-Control': 'no-store',
+						},
+					})
+				} catch (error) {
+					console.error(
+						`[summary-video] render failed for order ${orderId} after ${formatDuration(Date.now() - startedAt)}`,
+						error,
+					)
+					throw error
 				}
-
-				await unlink(artifact.filePath).catch(() => {})
-
-				return new Response(bytes, {
-					status: 200,
-					headers: {
-						'Content-Type': 'video/mp4',
-						'Content-Disposition': `attachment; filename="${artifact.filename}"`,
-						'Cache-Control': 'no-store',
-					},
-				})
 			},
 		},
 	},

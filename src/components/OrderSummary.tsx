@@ -212,7 +212,7 @@ export function OrderSummary({
 											className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-2.5 text-sm font-medium text-[var(--sea-ink)] transition-all hover:bg-[var(--link-bg-hover)]"
 										>
 											<Download size={14} />
-											Download MP4 summary
+											Download Train
 										</button>
 									</form>
 								) : null}

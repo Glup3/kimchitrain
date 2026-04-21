@@ -31,7 +31,7 @@ const COLORS = {
 }
 
 export const OrderSummaryVideoSchema = z.object({
-	title: z.string(),
+	orderId: z.string(),
 	totalCents: z.number(),
 	orderers: z.array(
 		z.object({
@@ -45,7 +45,7 @@ export const OrderSummaryVideoSchema = z.object({
 export type OrderSummaryVideoProps = z.infer<typeof OrderSummaryVideoSchema>
 
 export const defaultOrderSummaryVideoProps: OrderSummaryVideoProps = {
-	title: 'Kimchi Train',
+	orderId: '2DAE8E1E032D4423BC45EC72D5',
 	totalCents: 4850,
 	orderers: [
 		{

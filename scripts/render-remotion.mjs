@@ -12,11 +12,10 @@ async function main() {
 	await mkdir(RENDER_DIR, { recursive: true })
 
 	const payload = JSON.parse(process.argv[2] ?? '{}')
-	const compositionId = payload.compositionId ?? 'OrderSummaryVideo'
+	const compositionId = payload.compositionId
 	const inputProps = payload.inputProps ?? {}
-	const filenamePrefix =
-		compositionId === 'OrderSummaryVideo' ? `${inputProps.order?.id ?? 'order'}-summary` : 'simple-demo'
-	const filename = `${filenamePrefix}-${Date.now()}.mp4`
+	const filenamePrefix = `order-${inputProps.orderId}`
+	const filename = `${filenamePrefix}.mp4`
 	const outputLocation = path.join(RENDER_DIR, filename)
 	const serveUrl = await bundle({
 		entryPoint: ENTRY_POINT,
