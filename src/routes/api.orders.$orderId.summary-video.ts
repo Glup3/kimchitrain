@@ -14,17 +14,6 @@ interface RenderScriptResult {
 	filename: string
 }
 
-function numberParam(value: string | null, fallback: number) {
-	if (!value) return fallback
-	const parsed = Number(value)
-	return Number.isFinite(parsed) ? parsed : fallback
-}
-
-function booleanParam(value: string | null, fallback: boolean) {
-	if (value == null) return fallback
-	return value === 'true'
-}
-
 function runRenderScript(inputProps: OrderSummaryVideoProps) {
 	return new Promise<RenderScriptResult>((resolve, reject) => {
 		const child = spawn(
@@ -76,21 +65,6 @@ export const Route = createFileRoute('/api/orders/$orderId/summary-video')({
 
 				const inputProps = await getOrderSummaryVideoProps(orderId, {
 					title: url.searchParams.get('title') ?? undefined,
-					animation: {
-						introFrames: numberParam(url.searchParams.get('introFrames'), 24),
-						itemStaggerFrames: numberParam(url.searchParams.get('itemStaggerFrames'), 6),
-						personStaggerFrames: numberParam(url.searchParams.get('personStaggerFrames'), 8),
-						highlightPerson: url.searchParams.get('highlightPerson') ?? undefined,
-						showSettled: booleanParam(url.searchParams.get('showSettled'), true),
-					},
-					theme: {
-						accent: url.searchParams.get('accent') ?? undefined,
-						accentSecondary: url.searchParams.get('accentSecondary') ?? undefined,
-						background: url.searchParams.get('background') ?? undefined,
-						surface: url.searchParams.get('surface') ?? undefined,
-						foreground: url.searchParams.get('foreground') ?? undefined,
-						muted: url.searchParams.get('muted') ?? undefined,
-					},
 				})
 				const artifact = await runRenderScript(inputProps)
 				const bytes = await readFile(artifact.filePath).catch(() => null)

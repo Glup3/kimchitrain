@@ -1,412 +1,592 @@
 import {
 	AbsoluteFill,
-	Easing,
 	interpolate,
+	spring,
 	type CalculateMetadataFunction,
 	useCurrentFrame,
 	useVideoConfig,
 } from 'remotion'
 import { z } from 'zod'
 
+const FPS = 30
+const VIDEO_WIDTH = 1280
+const TRAIN_PADDING = 180
+const TRAIN_SPEED = 6.8
+const LOCO_WIDTH = 220
+const CARRIAGE_WIDTH = 250
+const CARRIAGE_GAP = 20
+
+const COLORS = {
+	seaInk: '#1c1917',
+	seaInkSoft: '#78716c',
+	lagoon: '#dc2626',
+	lagoonDeep: '#b91c1c',
+	palm: '#d97706',
+	sand: '#f5f5f4',
+	foam: '#fafaf9',
+	surface: 'rgba(255, 255, 255, 0.78)',
+	surfaceStrong: 'rgba(255, 255, 255, 0.92)',
+	line: 'rgba(28, 25, 23, 0.08)',
+	dot: 'rgba(28, 25, 23, 0.04)',
+}
+
 export const OrderSummaryVideoSchema = z.object({
 	title: z.string(),
-	order: z.object({
-		id: z.string(),
-		createdAtLabel: z.string(),
-		totalCents: z.number(),
-		outstandingCents: z.number(),
-		completed: z.boolean(),
-		itemCount: z.number(),
-		groupedItems: z.array(
-			z.object({
-				name: z.string(),
-				qty: z.number(),
-				lineTotal: z.number(),
-				orderers: z.array(z.string()),
-			}),
-		),
-		people: z.array(
-			z.object({
-				name: z.string(),
-				totalCents: z.number(),
-				settledCents: z.number(),
-				itemCount: z.number(),
-			}),
-		),
-	}),
-	animation: z.object({
-		introFrames: z.number(),
-		itemStaggerFrames: z.number(),
-		personStaggerFrames: z.number(),
-		highlightPerson: z.string().optional(),
-		showSettled: z.boolean(),
-	}),
-	theme: z.object({
-		background: z.string(),
-		surface: z.string(),
-		accent: z.string(),
-		accentSecondary: z.string(),
-		foreground: z.string(),
-		muted: z.string(),
-	}),
+	totalCents: z.number(),
+	orderers: z.array(
+		z.object({
+			name: z.string(),
+			items: z.array(z.string()),
+			totalCents: z.number(),
+		}),
+	),
 })
 
 export type OrderSummaryVideoProps = z.infer<typeof OrderSummaryVideoSchema>
 
 export const defaultOrderSummaryVideoProps: OrderSummaryVideoProps = {
-	title: 'Order summary',
-	order: {
-		id: 'demo-order',
-		createdAtLabel: 'Today, 19:30',
-		totalCents: 4850,
-		outstandingCents: 1275,
-		completed: true,
-		itemCount: 6,
-		groupedItems: [
-			{ name: 'Kimchi Fried Rice', qty: 2, lineTotal: 2500, orderers: ['Ditto', 'Maja'] },
-			{ name: 'Bibimbap', qty: 2, lineTotal: 1450, orderers: ['Noah', 'Maja'] },
-			{ name: 'Tteokbokki', qty: 2, lineTotal: 900, orderers: ['Ditto', 'Noah'] },
-		],
-		people: [
-			{ name: 'Ditto', totalCents: 1700, settledCents: 1700, itemCount: 2 },
-			{ name: 'Maja', totalCents: 1975, settledCents: 700, itemCount: 2 },
-			{ name: 'Noah', totalCents: 1175, settledCents: 1175, itemCount: 2 },
-		],
-	},
-	animation: {
-		introFrames: 24,
-		itemStaggerFrames: 6,
-		personStaggerFrames: 8,
-		highlightPerson: 'Maja',
-		showSettled: true,
-	},
-	theme: {
-		background: '#07131f',
-		surface: 'rgba(11, 24, 38, 0.76)',
-		accent: '#4fb8b2',
-		accentSecondary: '#7bf1a8',
-		foreground: '#f4fbff',
-		muted: 'rgba(244, 251, 255, 0.65)',
-	},
+	title: 'Kimchi Train',
+	totalCents: 4850,
+	orderers: [
+		{
+			name: 'Maja',
+			items: ['Kimchi Fried Rice', 'Bibimbap', 'Yuzu Soda'],
+			totalCents: 1975,
+		},
+		{
+			name: 'Ditto',
+			items: ['Tteokbokki', 'Kimchi Fried Rice'],
+			totalCents: 1700,
+		},
+		{
+			name: 'Noah',
+			items: ['Bibimbap', 'Tteokbokki'],
+			totalCents: 1175,
+		},
+	],
 }
 
 export const calculateOrderSummaryMetadata: CalculateMetadataFunction<OrderSummaryVideoProps> = async ({ props }) => {
-	const durationInFrames = Math.max(
-		180,
-		props.animation.introFrames + props.order.groupedItems.length * props.animation.itemStaggerFrames + 90,
-		props.animation.introFrames + props.order.people.length * props.animation.personStaggerFrames + 110,
-	)
+	const trainWidth = getTrainWidth(props.orderers.length)
+	const travelDistance = VIDEO_WIDTH + trainWidth + TRAIN_PADDING * 2
+	const durationInFrames = Math.max(180, Math.ceil(travelDistance / TRAIN_SPEED) + FPS)
 
 	return {
 		durationInFrames,
-		defaultOutName: `${props.order.id}-summary`,
+		defaultOutName: 'kimchitrain-summary',
 	}
 }
 
+function getTrainWidth(ordererCount: number) {
+	return LOCO_WIDTH + Math.max(ordererCount, 1) * CARRIAGE_WIDTH + Math.max(ordererCount - 1, 0) * CARRIAGE_GAP
+}
+
 function money(cents: number) {
-	return `€${(cents / 100).toFixed(2)}`
+	return new Intl.NumberFormat('de-DE', {
+		style: 'currency',
+		currency: 'EUR',
+	}).format(cents / 100)
 }
 
-function clampProgress(frame: number, start: number, end: number, easing = Easing.bezier(0.16, 1, 0.3, 1)) {
-	return interpolate(frame, [start, end], [0, 1], {
-		easing,
-		extrapolateLeft: 'clamp',
-		extrapolateRight: 'clamp',
-	})
+function getCarriageCopyScale(name: string, items: string[]) {
+	const longestItem = items.reduce((max, item) => Math.max(max, item.length), 0)
+	const loadFactor = Math.max(items.length - 3, 0) * 0.05 + Math.max(longestItem - 16, 0) * 0.008
+	const scale = Math.max(0.84, 1 - loadFactor)
+
+	return {
+		nameSize: Math.max(28, Math.round((name.length > 12 ? 32 : 36) * scale)),
+		itemSize: Math.max(16, Math.round(20 * scale)),
+		totalSize: Math.max(23, Math.round(28 * scale)),
+		gap: Math.max(10, Math.round(14 * scale)),
+	}
 }
 
-function ItemCard({
-	index,
-	item,
-	accent,
-	muted,
-	foreground,
-	stagger,
-	introFrames,
-}: {
-	index: number
-	item: OrderSummaryVideoProps['order']['groupedItems'][number]
-	accent: string
-	muted: string
-	foreground: string
-	stagger: number
-	introFrames: number
-}) {
-	const frame = useCurrentFrame()
-	const start = introFrames + index * stagger
-	const enter = clampProgress(frame, start, start + 14)
-	const opacity = interpolate(enter, [0, 1], [0, 1])
-	const translateY = interpolate(enter, [0, 1], [28, 0])
+function estimateWrappedLines(text: string, charsPerLine: number) {
+	return Math.max(1, Math.ceil(text.length / charsPerLine))
+}
 
+function getCarriageHeight(name: string, items: string[]) {
+	const copy = getCarriageCopyScale(name, items)
+	const nameLines = estimateWrappedLines(name, 11)
+	const nameHeight = Math.ceil(nameLines * copy.nameSize * 0.96)
+	const itemHeights = items.reduce((sum, item) => {
+		const itemLines = Math.min(3, estimateWrappedLines(item, 20))
+		return sum + Math.max(40, Math.ceil(itemLines * copy.itemSize * 1.16) + 16)
+	}, 0)
+	const itemsGap = Math.max(items.length - 1, 0) * 8
+	const contentHeight = 18 + nameHeight + copy.gap + itemHeights + itemsGap + 18
+
+	return Math.max(250, 56 + contentHeight + 60)
+}
+
+function Wheel({ x, y, radius, frame }: { x: number; y: number; radius: number; frame: number }) {
 	return (
 		<div
 			style={{
-				padding: '18px 20px',
-				borderRadius: 22,
-				background: 'rgba(255,255,255,0.06)',
-				border: '1px solid rgba(255,255,255,0.08)',
-				opacity,
-				transform: `translateY(${translateY}px)`,
-			}}
-		>
-			<div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
-				<div style={{ display: 'flex', gap: 14, alignItems: 'baseline', minWidth: 0 }}>
-					<div style={{ fontSize: 24, fontWeight: 800, color: accent, minWidth: 34 }}>{item.qty}x</div>
-					<div style={{ minWidth: 0 }}>
-						<div
-							style={{
-								fontSize: 24,
-								fontWeight: 700,
-								color: foreground,
-								whiteSpace: 'nowrap',
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-							}}
-						>
-							{item.name}
-						</div>
-						<div style={{ fontSize: 15, color: muted, marginTop: 6 }}>{item.orderers.join(' • ')}</div>
-					</div>
-				</div>
-				<div style={{ fontSize: 24, fontWeight: 700, color: foreground }}>{money(item.lineTotal)}</div>
-			</div>
-		</div>
-	)
-}
-
-function PersonCard({
-	index,
-	person,
-	highlightPerson,
-	showSettled,
-	accent,
-	accentSecondary,
-	foreground,
-	muted,
-	stagger,
-	introFrames,
-}: {
-	index: number
-	person: OrderSummaryVideoProps['order']['people'][number]
-	highlightPerson?: string
-	showSettled: boolean
-	accent: string
-	accentSecondary: string
-	foreground: string
-	muted: string
-	stagger: number
-	introFrames: number
-}) {
-	const frame = useCurrentFrame()
-	const start = introFrames + 18 + index * stagger
-	const enter = clampProgress(frame, start, start + 14)
-	const highlighted = highlightPerson?.trim().toLowerCase() === person.name.trim().toLowerCase()
-	const unsettledCents = person.totalCents - person.settledCents
-
-	return (
-		<div
-			style={{
-				padding: '16px 18px',
-				borderRadius: 20,
-				background: highlighted
-					? `linear-gradient(135deg, ${accent}22, ${accentSecondary}16)`
-					: 'rgba(255,255,255,0.05)',
-				border: highlighted ? `1px solid ${accent}66` : '1px solid rgba(255,255,255,0.08)',
-				opacity: enter,
-				transform: `translateY(${interpolate(enter, [0, 1], [24, 0])}px)`,
-			}}
-		>
-			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-				<div>
-					<div style={{ fontSize: 22, fontWeight: 700, color: foreground }}>{person.name}</div>
-					<div style={{ fontSize: 14, color: muted, marginTop: 4 }}>{person.itemCount} items</div>
-				</div>
-				<div style={{ textAlign: 'right' }}>
-					<div style={{ fontSize: 22, fontWeight: 700, color: foreground }}>{money(person.totalCents)}</div>
-					{showSettled && (
-						<div style={{ fontSize: 14, color: unsettledCents === 0 ? accentSecondary : muted, marginTop: 4 }}>
-							{unsettledCents === 0 ? 'Settled' : `${money(unsettledCents)} open`}
-						</div>
-					)}
-				</div>
-			</div>
-		</div>
-	)
-}
-
-export function OrderSummaryVideo(props: OrderSummaryVideoProps) {
-	const frame = useCurrentFrame()
-	const { durationInFrames } = useVideoConfig()
-	const intro = clampProgress(frame, 0, props.animation.introFrames)
-	const outro = clampProgress(frame, durationInFrames - 18, durationInFrames)
-	const scene = intro - outro
-	const heroY = interpolate(scene, [0, 1], [36, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
-	const heroOpacity = interpolate(scene, [0, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
-	const glow = 1 + 0.04 * Math.sin(frame / 14)
-	const settledPeople = props.order.people.filter((person) => person.totalCents === person.settledCents).length
-
-	return (
-		<AbsoluteFill
-			style={{
-				background: `radial-gradient(circle at 20% 10%, ${props.theme.accent}20, transparent 26%), radial-gradient(circle at 85% 18%, ${props.theme.accentSecondary}18, transparent 28%), ${props.theme.background}`,
-				fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif',
-				color: props.theme.foreground,
+				position: 'absolute',
+				left: x,
+				top: y,
+				width: radius * 2,
+				height: radius * 2,
+				borderRadius: '50%',
+				background: COLORS.seaInk,
+				boxShadow: 'inset 0 0 0 8px rgba(255,255,255,0.14)',
 			}}
 		>
 			<div
 				style={{
 					position: 'absolute',
-					inset: -120,
-					background: `conic-gradient(from ${frame * 1.8}deg, ${props.theme.accent}20, transparent 30%, ${props.theme.accentSecondary}16)`,
-					filter: 'blur(90px)',
-					transform: `scale(${glow})`,
-					opacity: 0.9,
+					left: '50%',
+					top: '50%',
+					width: radius * 0.78,
+					height: 4,
+					marginLeft: -(radius * 0.39),
+					marginTop: -2,
+					background: 'rgba(255,255,255,0.42)',
+					transform: `rotate(${frame * 12}deg)`,
+					transformOrigin: 'center center',
 				}}
 			/>
-			<div style={{ padding: '66px 72px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+			<div
+				style={{
+					position: 'absolute',
+					left: '50%',
+					top: '50%',
+					width: 4,
+					height: radius * 0.78,
+					marginLeft: -2,
+					marginTop: -(radius * 0.39),
+					background: 'rgba(255,255,255,0.42)',
+					transform: `rotate(${frame * 12}deg)`,
+					transformOrigin: 'center center',
+				}}
+			/>
+		</div>
+	)
+}
+
+function Track({ frame }: { frame: number }) {
+	return (
+		<>
+			<div
+				style={{
+					position: 'absolute',
+					left: 0,
+					right: 0,
+					bottom: 0,
+					height: 176,
+					background:
+						'linear-gradient(180deg, rgba(245,245,244,0) 0%, rgba(245,245,244,0.55) 34%, rgba(255,255,255,0.95) 100%)',
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 0,
+					right: 0,
+					bottom: 108,
+					height: 6,
+					background: COLORS.seaInk,
+					opacity: 0.3,
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 0,
+					right: 0,
+					bottom: 70,
+					height: 6,
+					background: COLORS.seaInk,
+					opacity: 0.3,
+				}}
+			/>
+			{Array.from({ length: 18 }).map((_, index) => (
+				<div
+					key={index}
+					style={{
+						position: 'absolute',
+						left: -30 + index * 78 + ((frame * 12) % 78),
+						bottom: 78,
+						width: 56,
+						height: 20,
+						borderRadius: 8,
+						background: COLORS.seaInk,
+						opacity: 0.14,
+					}}
+				/>
+			))}
+		</>
+	)
+}
+
+function Locomotive({ frame }: { frame: number }) {
+	const bob = Math.sin(frame / 8) * 2.5
+
+	return (
+		<div
+			style={{
+				position: 'relative',
+				width: LOCO_WIDTH,
+				height: 250,
+				transform: `translateY(${bob}px) scaleX(-1)`,
+			}}
+		>
+			<div
+				style={{
+					position: 'absolute',
+					left: 22,
+					top: 110,
+					width: 122,
+					height: 74,
+					borderRadius: 20,
+					background: COLORS.lagoon,
+					boxShadow: '0 10px 24px rgba(220, 38, 38, 0.16)',
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 96,
+					top: 82,
+					width: 96,
+					height: 102,
+					borderRadius: '24px 28px 20px 20px',
+					background: COLORS.surfaceStrong,
+					border: `1px solid ${COLORS.line}`,
+				}}
+			>
 				<div
 					style={{
-						display: 'flex',
-						justifyContent: 'space-between',
-						gap: 40,
-						opacity: heroOpacity,
-						transform: `translateY(${heroY}px)`,
+						position: 'absolute',
+						left: 14,
+						top: 14,
+						width: 28,
+						height: 28,
+						borderRadius: 10,
+						background: 'rgba(220, 38, 38, 0.14)',
+					}}
+				/>
+			</div>
+			<div
+				style={{
+					position: 'absolute',
+					left: 156,
+					top: 114,
+					width: 54,
+					height: 54,
+					borderRadius: '50%',
+					background: COLORS.palm,
+					boxShadow: '0 0 0 8px rgba(217, 119, 6, 0.12)',
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 32,
+					top: 72,
+					width: 34,
+					height: 60,
+					borderRadius: 12,
+					background: COLORS.seaInk,
+					opacity: 0.18,
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 12,
+					top: 170,
+					width: 188,
+					height: 18,
+					borderRadius: 999,
+					background: COLORS.seaInk,
+					opacity: 0.88,
+				}}
+			/>
+			<Wheel x={24} y={166} radius={26} frame={frame} />
+			<Wheel x={114} y={166} radius={26} frame={frame} />
+		</div>
+	)
+}
+
+function Carriage({
+	orderer,
+	index,
+	frame,
+}: {
+	orderer: OrderSummaryVideoProps['orderers'][number]
+	index: number
+	frame: number
+}) {
+	const bob = Math.sin(frame / 8 + index * 0.65) * 2
+	const enter = spring({
+		fps: FPS,
+		frame: frame - index * 3,
+		config: { damping: 200, stiffness: 160 },
+		durationInFrames: 20,
+	})
+	const copy = getCarriageCopyScale(orderer.name, orderer.items)
+	const carriageHeight = getCarriageHeight(orderer.name, orderer.items)
+	const wheelY = carriageHeight - 70
+	const axleY = carriageHeight - 62
+	const bodyTop = 56
+	const bodyBottomOffset = 60
+	const bodyHeight = carriageHeight - bodyTop - bodyBottomOffset
+	const couplerY = bodyTop + bodyHeight - 64
+
+	return (
+		<div
+			style={{
+				position: 'relative',
+				width: CARRIAGE_WIDTH,
+				height: carriageHeight,
+				transform: `translateY(${bob + interpolate(enter, [0, 1], [14, 0])}px)`,
+				opacity: enter,
+			}}
+		>
+			<div
+				style={{
+					position: 'absolute',
+					left: 16,
+					right: 16,
+					top: 0,
+					display: 'flex',
+					justifyContent: 'center',
+					zIndex: 2,
+				}}
+			>
+				<div
+					style={{
+						fontSize: copy.nameSize,
+						lineHeight: 0.96,
+						fontWeight: 700,
+						letterSpacing: -1.5,
+						color: COLORS.seaInk,
+						wordBreak: 'break-word',
+						textAlign: 'center',
 					}}
 				>
-					<div style={{ flex: 1 }}>
-						<div
-							style={{
-								display: 'inline-flex',
-								gap: 10,
-								alignItems: 'center',
-								padding: '10px 16px',
-								borderRadius: 999,
-								background: `${props.theme.accent}18`,
-								border: `1px solid ${props.theme.accent}55`,
-								fontSize: 16,
-								letterSpacing: 1.4,
-								textTransform: 'uppercase',
-								color: props.theme.accentSecondary,
-							}}
-						>
-							<div style={{ width: 8, height: 8, borderRadius: 999, background: props.theme.accentSecondary }} />
-							Kimchi Train
-						</div>
-						<div
-							style={{
-								fontFamily: 'Syne, Outfit, sans-serif',
-								fontSize: 68,
-								lineHeight: 0.95,
-								fontWeight: 800,
-								marginTop: 22,
-								letterSpacing: -2.5,
-							}}
-						>
-							{props.title}
-						</div>
-						<div style={{ marginTop: 18, fontSize: 22, color: props.theme.muted }}>
-							{props.order.createdAtLabel} · {props.order.itemCount} items
-						</div>
-					</div>
+					{orderer.name}
+				</div>
+			</div>
+			<div
+				style={{
+					position: 'absolute',
+					left: 0,
+					right: 0,
+					top: bodyTop,
+					bottom: bodyBottomOffset,
+					borderRadius: 24,
+					background: COLORS.surfaceStrong,
+					border: `1px solid ${COLORS.line}`,
+					boxShadow: '0 16px 30px rgba(28, 25, 23, 0.06)',
+					overflow: 'hidden',
+				}}
+			>
+				<div
+					style={{
+						position: 'absolute',
+						left: 0,
+						right: 0,
+						top: 0,
+						height: 6,
+						background: index % 2 === 0 ? COLORS.lagoon : COLORS.palm,
+					}}
+				/>
+				<div
+					style={{
+						position: 'absolute',
+						left: 20,
+						right: 20,
+						top: 18,
+						bottom: 18,
+						display: 'flex',
+						flexDirection: 'column',
+						gap: copy.gap,
+					}}
+				>
 					<div
 						style={{
-							width: 350,
-							padding: 26,
-							borderRadius: 30,
-							background: props.theme.surface,
-							border: '1px solid rgba(255,255,255,0.08)',
-							boxShadow: '0 20px 70px rgba(0,0,0,0.3)',
-							backdropFilter: 'blur(20px)',
+							fontSize: copy.totalSize,
+							fontWeight: 700,
+							letterSpacing: -0.8,
+							color: COLORS.palm,
+							textAlign: 'center',
 						}}
 					>
-						<div style={{ color: props.theme.muted, fontSize: 15, textTransform: 'uppercase', letterSpacing: 1.2 }}>
-							Total
-						</div>
-						<div style={{ fontSize: 56, fontWeight: 800, marginTop: 10 }}>{money(props.order.totalCents)}</div>
-						<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 18 }}>
-							<div style={{ padding: '14px 16px', borderRadius: 18, background: 'rgba(255,255,255,0.05)' }}>
-								<div style={{ fontSize: 13, color: props.theme.muted }}>People</div>
-								<div style={{ fontSize: 28, fontWeight: 700, marginTop: 6 }}>{props.order.people.length}</div>
-							</div>
-							<div style={{ padding: '14px 16px', borderRadius: 18, background: 'rgba(255,255,255,0.05)' }}>
-								<div style={{ fontSize: 13, color: props.theme.muted }}>Settled</div>
-								<div style={{ fontSize: 28, fontWeight: 700, marginTop: 6 }}>{settledPeople}</div>
-							</div>
-						</div>
-						{props.animation.showSettled && (
+						{money(orderer.totalCents)}
+					</div>
+
+					<div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minHeight: 0 }}>
+						{orderer.items.map((item, itemIndex) => (
 							<div
+								key={`${orderer.name}-${item}-${itemIndex}`}
 								style={{
-									marginTop: 16,
-									color: props.order.outstandingCents === 0 ? props.theme.accentSecondary : props.theme.muted,
-									fontSize: 16,
+									display: 'flex',
+									gap: 10,
+									alignItems: 'flex-start',
+									padding: '8px 10px',
+									borderRadius: 14,
+									background: COLORS.surface,
+									border: `1px solid ${COLORS.line}`,
 								}}
 							>
-								{props.order.outstandingCents === 0
-									? 'All settled up'
-									: `${money(props.order.outstandingCents)} still open`}
+								<div
+									style={{
+										width: 6,
+										height: 6,
+										marginTop: 8,
+										borderRadius: '50%',
+										background: index % 2 === 0 ? COLORS.lagoon : COLORS.palm,
+										flexShrink: 0,
+									}}
+								/>
+								<div
+									style={{
+										fontSize: copy.itemSize,
+										lineHeight: 1.16,
+										fontWeight: 500,
+										color: COLORS.seaInk,
+										overflow: 'hidden',
+										display: '-webkit-box',
+										WebkitLineClamp: 2,
+										WebkitBoxOrient: 'vertical',
+										wordBreak: 'break-word',
+									}}
+								>
+									{item}
+								</div>
 							</div>
-						)}
+						))}
 					</div>
 				</div>
+			</div>
+			<div
+				style={{
+					position: 'absolute',
+					left: -12,
+					top: couplerY,
+					width: 18,
+					height: 10,
+					borderRadius: 999,
+					background: COLORS.seaInk,
+					opacity: 0.2,
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					right: -12,
+					top: couplerY,
+					width: 18,
+					height: 10,
+					borderRadius: 999,
+					background: COLORS.seaInk,
+					opacity: 0.2,
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 18,
+					right: 18,
+					top: axleY,
+					height: 14,
+					borderRadius: 999,
+					background: COLORS.seaInk,
+					opacity: 0.88,
+				}}
+			/>
+			<Wheel x={28} y={wheelY} radius={24} frame={frame} />
+			<Wheel x={154} y={wheelY} radius={24} frame={frame} />
+		</div>
+	)
+}
 
-				<div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.88fr', gap: 26, marginTop: 34, flex: 1 }}>
-					<div
-						style={{
-							background: props.theme.surface,
-							borderRadius: 34,
-							padding: 28,
-							border: '1px solid rgba(255,255,255,0.08)',
-							display: 'flex',
-							flexDirection: 'column',
-							gap: 14,
-						}}
-					>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-							<div style={{ fontSize: 28, fontWeight: 700 }}>Items ordered</div>
-							<div style={{ color: props.theme.muted, fontSize: 16 }}>{props.order.id}</div>
-						</div>
-						{props.order.groupedItems.map((item, index) => (
-							<ItemCard
-								key={`${item.name}-${index}`}
-								index={index}
-								item={item}
-								accent={props.theme.accent}
-								muted={props.theme.muted}
-								foreground={props.theme.foreground}
-								stagger={props.animation.itemStaggerFrames}
-								introFrames={props.animation.introFrames}
-							/>
-						))}
+function Background({ totalCents, ordererCount }: { totalCents: number; ordererCount: number }) {
+	return (
+		<>
+			<div style={{ position: 'absolute', inset: 0, background: COLORS.foam }} />
+			<div
+				style={{
+					position: 'absolute',
+					inset: 0,
+					backgroundImage: `radial-gradient(${COLORS.dot} 1px, transparent 1px)`,
+					backgroundSize: '20px 20px',
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: 40,
+					right: 40,
+					top: 34,
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-start',
+					gap: 24,
+				}}
+			>
+				<div>
+					<div style={{ fontSize: 18, fontWeight: 700, color: COLORS.seaInk, letterSpacing: -0.3 }}>Kimchi Train</div>
+					<div style={{ fontSize: 14, color: COLORS.seaInkSoft, marginTop: 4 }}>{ordererCount} orderers</div>
+				</div>
+				<div
+					style={{
+						padding: '14px 18px',
+						borderRadius: 18,
+						background: COLORS.surfaceStrong,
+						border: `1px solid ${COLORS.line}`,
+						boxShadow: '0 12px 24px rgba(28, 25, 23, 0.05)',
+					}}
+				>
+					<div style={{ fontSize: 12, color: COLORS.seaInkSoft, textTransform: 'uppercase', letterSpacing: 1.1 }}>
+						Total
 					</div>
-					<div
-						style={{
-							background: props.theme.surface,
-							borderRadius: 34,
-							padding: 28,
-							border: '1px solid rgba(255,255,255,0.08)',
-							display: 'flex',
-							flexDirection: 'column',
-							gap: 12,
-						}}
-					>
-						<div style={{ fontSize: 28, fontWeight: 700 }}>Per person</div>
-						{props.order.people.map((person, index) => (
-							<PersonCard
-								key={person.name}
-								index={index}
-								person={person}
-								highlightPerson={props.animation.highlightPerson}
-								showSettled={props.animation.showSettled}
-								accent={props.theme.accent}
-								accentSecondary={props.theme.accentSecondary}
-								foreground={props.theme.foreground}
-								muted={props.theme.muted}
-								stagger={props.animation.personStaggerFrames}
-								introFrames={props.animation.introFrames}
-							/>
-						))}
+					<div style={{ fontSize: 28, fontWeight: 700, letterSpacing: -0.8, color: COLORS.palm, marginTop: 2 }}>
+						{money(totalCents)}
 					</div>
 				</div>
+			</div>
+		</>
+	)
+}
+
+export function OrderSummaryVideo(props: OrderSummaryVideoProps) {
+	const frame = useCurrentFrame()
+	const { width, durationInFrames } = useVideoConfig()
+	const trainWidth = getTrainWidth(props.orderers.length)
+	const trainX = interpolate(frame, [0, durationInFrames - 1], [-trainWidth - TRAIN_PADDING, width + TRAIN_PADDING], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	})
+
+	return (
+		<AbsoluteFill
+			style={{
+				fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif',
+				overflow: 'hidden',
+				color: COLORS.seaInk,
+			}}
+		>
+			<Background totalCents={props.totalCents} ordererCount={props.orderers.length} />
+			<Track frame={frame} />
+
+			<div
+				style={{
+					position: 'absolute',
+					left: trainX,
+					bottom: 78,
+					display: 'flex',
+					alignItems: 'flex-end',
+					gap: CARRIAGE_GAP,
+				}}
+			>
+				{[...props.orderers].reverse().map((orderer, index) => (
+					<Carriage key={`${orderer.name}-${index}`} orderer={orderer} index={index} frame={frame} />
+				))}
+				<Locomotive frame={frame} />
 			</div>
 		</AbsoluteFill>
 	)
