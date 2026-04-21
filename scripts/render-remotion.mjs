@@ -12,7 +12,7 @@ async function main() {
 	await mkdir(RENDER_DIR, { recursive: true })
 
 	const payload = JSON.parse(process.argv[2] ?? '{}')
-	const compositionId = payload.compositionId ?? 'SimpleDemo'
+	const compositionId = payload.compositionId ?? 'OrderSummaryVideo'
 	const inputProps = payload.inputProps ?? {}
 	const filenamePrefix =
 		compositionId === 'OrderSummaryVideo' ? `${inputProps.order?.id ?? 'order'}-summary` : 'simple-demo'

@@ -9,21 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RemotionExportRouteImport } from './routes/remotion-export'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainOrderIdRouteImport } from './routes/train/$orderId'
-import { Route as ApiRemotionRenderDownloadRouteImport } from './routes/api.remotion-render-download'
 import { Route as ApiQueryRouteImport } from './routes/api.query'
 import { Route as ApiMutateRouteImport } from './routes/api.mutate'
 import { Route as ApiOrdersOrderIdSummaryVideoRouteImport } from './routes/api.orders.$orderId.summary-video'
 
-const RemotionExportRoute = RemotionExportRouteImport.update({
-  id: '/remotion-export',
-  path: '/remotion-export',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
@@ -44,12 +37,6 @@ const TrainOrderIdRoute = TrainOrderIdRouteImport.update({
   path: '/train/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRemotionRenderDownloadRoute =
-  ApiRemotionRenderDownloadRouteImport.update({
-    id: '/api/remotion-render-download',
-    path: '/api/remotion-render-download',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiQueryRoute = ApiQueryRouteImport.update({
   id: '/api/query',
   path: '/api/query',
@@ -71,10 +58,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRoute
-  '/remotion-export': typeof RemotionExportRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
-  '/api/remotion-render-download': typeof ApiRemotionRenderDownloadRoute
   '/train/$orderId': typeof TrainOrderIdRoute
   '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
@@ -82,10 +67,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRoute
-  '/remotion-export': typeof RemotionExportRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
-  '/api/remotion-render-download': typeof ApiRemotionRenderDownloadRoute
   '/train/$orderId': typeof TrainOrderIdRoute
   '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
@@ -94,10 +77,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/archive': typeof ArchiveRoute
-  '/remotion-export': typeof RemotionExportRoute
   '/api/mutate': typeof ApiMutateRoute
   '/api/query': typeof ApiQueryRoute
-  '/api/remotion-render-download': typeof ApiRemotionRenderDownloadRoute
   '/train/$orderId': typeof TrainOrderIdRoute
   '/api/orders/$orderId/summary-video': typeof ApiOrdersOrderIdSummaryVideoRoute
 }
@@ -107,10 +88,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
-    | '/remotion-export'
     | '/api/mutate'
     | '/api/query'
-    | '/api/remotion-render-download'
     | '/train/$orderId'
     | '/api/orders/$orderId/summary-video'
   fileRoutesByTo: FileRoutesByTo
@@ -118,10 +97,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
-    | '/remotion-export'
     | '/api/mutate'
     | '/api/query'
-    | '/api/remotion-render-download'
     | '/train/$orderId'
     | '/api/orders/$orderId/summary-video'
   id:
@@ -129,10 +106,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/archive'
-    | '/remotion-export'
     | '/api/mutate'
     | '/api/query'
-    | '/api/remotion-render-download'
     | '/train/$orderId'
     | '/api/orders/$orderId/summary-video'
   fileRoutesById: FileRoutesById
@@ -141,23 +116,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   ArchiveRoute: typeof ArchiveRoute
-  RemotionExportRoute: typeof RemotionExportRoute
   ApiMutateRoute: typeof ApiMutateRoute
   ApiQueryRoute: typeof ApiQueryRoute
-  ApiRemotionRenderDownloadRoute: typeof ApiRemotionRenderDownloadRoute
   TrainOrderIdRoute: typeof TrainOrderIdRoute
   ApiOrdersOrderIdSummaryVideoRoute: typeof ApiOrdersOrderIdSummaryVideoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/remotion-export': {
-      id: '/remotion-export'
-      path: '/remotion-export'
-      fullPath: '/remotion-export'
-      preLoaderRoute: typeof RemotionExportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/archive': {
       id: '/archive'
       path: '/archive'
@@ -184,13 +150,6 @@ declare module '@tanstack/react-router' {
       path: '/train/$orderId'
       fullPath: '/train/$orderId'
       preLoaderRoute: typeof TrainOrderIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/remotion-render-download': {
-      id: '/api/remotion-render-download'
-      path: '/api/remotion-render-download'
-      fullPath: '/api/remotion-render-download'
-      preLoaderRoute: typeof ApiRemotionRenderDownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/query': {
@@ -221,10 +180,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   ArchiveRoute: ArchiveRoute,
-  RemotionExportRoute: RemotionExportRoute,
   ApiMutateRoute: ApiMutateRoute,
   ApiQueryRoute: ApiQueryRoute,
-  ApiRemotionRenderDownloadRoute: ApiRemotionRenderDownloadRoute,
   TrainOrderIdRoute: TrainOrderIdRoute,
   ApiOrdersOrderIdSummaryVideoRoute: ApiOrdersOrderIdSummaryVideoRoute,
 }
