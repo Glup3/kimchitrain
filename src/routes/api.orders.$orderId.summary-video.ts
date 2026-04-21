@@ -70,14 +70,9 @@ function runRenderScript(inputProps: OrderSummaryVideoProps) {
 export const Route = createFileRoute('/api/orders/$orderId/summary-video')({
 	server: {
 		handlers: {
-			POST: async ({ request }) => {
+			POST: async ({ request, params }) => {
 				const url = new URL(request.url)
-				const pathParts = url.pathname.split('/').filter(Boolean)
-				const orderId = pathParts[pathParts.length - 2]
-
-				if (!orderId) {
-					return new Response('Missing order ID', { status: 400 })
-				}
+				const orderId = params.orderId
 
 				const inputProps = await getOrderSummaryVideoProps(orderId, {
 					title: url.searchParams.get('title') ?? undefined,
