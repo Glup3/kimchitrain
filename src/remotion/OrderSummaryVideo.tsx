@@ -222,7 +222,7 @@ function Track({ frame }: { frame: number }) {
 					bottom: 108,
 					height: 6,
 					background: COLORS.seaInk,
-					opacity: 0.3,
+					opacity: 0.52,
 				}}
 			/>
 			<div
@@ -233,7 +233,7 @@ function Track({ frame }: { frame: number }) {
 					bottom: 70,
 					height: 6,
 					background: COLORS.seaInk,
-					opacity: 0.3,
+					opacity: 0.52,
 				}}
 			/>
 			{Array.from({ length: 18 }).map((_, index) => (
@@ -247,7 +247,7 @@ function Track({ frame }: { frame: number }) {
 						height: 20,
 						borderRadius: 8,
 						background: COLORS.seaInk,
-						opacity: 0.14,
+						opacity: 0.24,
 					}}
 				/>
 			))}
