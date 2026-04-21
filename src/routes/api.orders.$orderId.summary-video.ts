@@ -70,7 +70,7 @@ function runRenderScript(inputProps: OrderSummaryVideoProps) {
 export const Route = createFileRoute('/api/orders/$orderId/summary-video')({
 	server: {
 		handlers: {
-			GET: async ({ request }) => {
+			POST: async ({ request }) => {
 				const url = new URL(request.url)
 				const pathParts = url.pathname.split('/').filter(Boolean)
 				const orderId = pathParts[pathParts.length - 2]
