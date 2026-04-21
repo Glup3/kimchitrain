@@ -36,6 +36,9 @@ async function main() {
 		overwrite: true,
 		inputProps,
 		logLevel: 'error',
+		chromiumOptions: {
+			enableMultiProcessOnLinux: true,
+		},
 	})
 
 	process.stdout.write(
