@@ -1,6 +1,6 @@
 import { useQuery, useZero } from '@rocicorp/zero/react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Archive, BarChart3, Plus } from 'lucide-react'
+import { Archive, BarChart3, Film, Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import { ulid } from 'ulid'
 
@@ -33,6 +33,13 @@ function Nav({ onCreateOrder }: { onCreateOrder: () => void }) {
 					>
 						<BarChart3 size={16} strokeWidth={2.5} />
 						<span className="hidden md:inline">Analytics</span>
+					</Link>
+					<Link
+						to="/remotion-export"
+						className="flex items-center gap-1.5 rounded-lg border border-[var(--line)] px-2 py-2 text-sm font-medium text-[var(--sea-ink)] no-underline hover:bg-[var(--surface-strong)] md:px-3"
+					>
+						<Film size={16} strokeWidth={2.5} />
+						<span className="hidden md:inline">Video Demo</span>
 					</Link>
 					<button
 						type="button"

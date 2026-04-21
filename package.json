@@ -15,6 +15,7 @@
 		"lint:ts": "tsgo --noEmit",
 		"openapi-ts": "openapi-ts",
 		"preview": "vite preview",
+		"remotion:studio": "remotion studio src/remotion/index.ts",
 		"test": "vitest run",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
@@ -24,6 +25,8 @@
 		"db:zero": "drizzle-zero generate -o src/db/zero-schema.ts"
 	},
 	"dependencies": {
+		"@remotion/cli": "4.0.448",
+		"@remotion/renderer": "4.0.448",
 		"@rocicorp/zero": "^1.0.0",
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.1.18",
@@ -44,6 +47,7 @@
 		"react-dom": "^19.2.0",
 		"react-joyride": "^3.0.0",
 		"recharts": "^3.8.1",
+		"remotion": "4.0.448",
 		"tailwind-merge": "^3.5.0",
 		"tailwindcss": "^4.1.18",
 		"ulid": "^3.0.2",
