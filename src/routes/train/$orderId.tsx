@@ -105,6 +105,8 @@ function OrderPage() {
 	const currentOrderItems = order.items
 	const totalCents = currentOrderItems.reduce((sum, item) => sum + item.priceCents, 0)
 
+	const downloadVideoUrl = `/api/orders/${orderId}/summary-video?introFrames=24&itemStaggerFrames=6&personStaggerFrames=8&showSettled=true`
+
 	const summaryProps = {
 		items: currentOrderItems,
 		createdAt: order.createdAt,
@@ -112,6 +114,7 @@ function OrderPage() {
 		onUpdateOrderer: handleUpdateOrderer,
 		onSettleItem: handleSettleItem,
 		readOnly: isCompleted,
+		downloadVideoUrl: isCompleted ? downloadVideoUrl : undefined,
 	}
 
 	return (
