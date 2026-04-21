@@ -67,9 +67,7 @@ export const defaultOrderSummaryVideoProps: OrderSummaryVideoProps = {
 }
 
 export const calculateOrderSummaryMetadata: CalculateMetadataFunction<OrderSummaryVideoProps> = async ({ props }) => {
-	const trainWidth = getTrainWidth(props.orderers.length)
-	const travelDistance = VIDEO_WIDTH + trainWidth + TRAIN_PADDING * 2
-	const durationInFrames = Math.max(180, Math.ceil(travelDistance / TRAIN_SPEED) + FPS)
+	const durationInFrames = getAnimationEndFrame(props.orderers.length)
 
 	return {
 		durationInFrames,
@@ -79,6 +77,43 @@ export const calculateOrderSummaryMetadata: CalculateMetadataFunction<OrderSumma
 
 function getTrainWidth(ordererCount: number) {
 	return LOCO_WIDTH + Math.max(ordererCount, 1) * CARRIAGE_WIDTH + Math.max(ordererCount - 1, 0) * CARRIAGE_GAP
+}
+
+function getTrainMotion(frame: number, width: number, ordererCount: number) {
+	const trainWidth = getTrainWidth(ordererCount)
+	const carriageBlockWidth = trainWidth - LOCO_WIDTH
+	const locomotiveLeadInset = 28
+	const startX = locomotiveLeadInset - carriageBlockWidth
+	const endX = width + TRAIN_PADDING
+	const lastCarriageLeftAtTrigger = width * 0.33 - CARRIAGE_WIDTH / 2
+	const triggerFrame = Math.max(0, Math.ceil((lastCarriageLeftAtTrigger - startX) / TRAIN_SPEED))
+	const triggerX = startX + triggerFrame * TRAIN_SPEED
+	const exitFrames = Math.max(frame - triggerFrame, 0)
+	const exitBoost = interpolate(frame, [triggerFrame, triggerFrame + 10], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	})
+
+	const trainX =
+		frame <= triggerFrame
+			? startX + frame * TRAIN_SPEED
+			: Math.min(endX, triggerX + exitFrames * TRAIN_SPEED * (1 + 4.8 * exitBoost))
+
+	return { trainX }
+}
+
+function getAnimationEndFrame(ordererCount: number) {
+	const trainWidth = getTrainWidth(ordererCount)
+	const maxFrames = Math.max(90, Math.ceil((VIDEO_WIDTH + trainWidth + TRAIN_PADDING * 2) / TRAIN_SPEED))
+
+	for (let frame = 1; frame <= maxFrames; frame++) {
+		const { trainX } = getTrainMotion(frame, VIDEO_WIDTH, ordererCount)
+		if (trainX >= VIDEO_WIDTH) {
+			return frame + 1
+		}
+	}
+
+	return maxFrames
 }
 
 function money(cents: number) {
@@ -555,9 +590,9 @@ function Background({ totalCents, ordererCount }: { totalCents: number; ordererC
 
 export function OrderSummaryVideo(props: OrderSummaryVideoProps) {
 	const frame = useCurrentFrame()
-	const { width, durationInFrames } = useVideoConfig()
-	const trainWidth = getTrainWidth(props.orderers.length)
-	const trainX = interpolate(frame, [0, durationInFrames - 1], [-trainWidth - TRAIN_PADDING, width + TRAIN_PADDING], {
+	const { width } = useVideoConfig()
+	const { trainX } = getTrainMotion(frame, width, props.orderers.length)
+	const carriageReveal = interpolate(frame, [0, 16], [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	})
@@ -578,15 +613,30 @@ export function OrderSummaryVideo(props: OrderSummaryVideoProps) {
 					position: 'absolute',
 					left: trainX,
 					bottom: 78,
-					display: 'flex',
-					alignItems: 'flex-end',
-					gap: CARRIAGE_GAP,
 				}}
 			>
-				{[...props.orderers].reverse().map((orderer, index) => (
-					<Carriage key={`${orderer.name}-${index}`} orderer={orderer} index={index} frame={frame} />
-				))}
-				<Locomotive frame={frame} />
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'flex-end',
+						gap: CARRIAGE_GAP,
+					}}
+				>
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'flex-end',
+							gap: CARRIAGE_GAP,
+							opacity: carriageReveal,
+							transform: `translateX(${interpolate(carriageReveal, [0, 1], [-28, 0])}px)`,
+						}}
+					>
+						{[...props.orderers].reverse().map((orderer, index) => (
+							<Carriage key={`${orderer.name}-${index}`} orderer={orderer} index={index} frame={frame} />
+						))}
+					</div>
+					<Locomotive frame={frame} />
+				</div>
 			</div>
 		</AbsoluteFill>
 	)
