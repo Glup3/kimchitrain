@@ -11,7 +11,7 @@ import { z } from 'zod'
 const FPS = 30
 const VIDEO_WIDTH = 1280
 const TRAIN_PADDING = 180
-const TRAIN_SPEED = 6.8
+const TRAIN_SPEED = 5.4
 const LOCO_WIDTH = 220
 const CARRIAGE_WIDTH = 250
 const CARRIAGE_GAP = 20
@@ -539,7 +539,7 @@ function Carriage({
 	)
 }
 
-function Background({ totalCents, ordererCount }: { totalCents: number; ordererCount: number }) {
+function Background({ totalCents }: { totalCents: number }) {
 	return (
 		<>
 			<div style={{ position: 'absolute', inset: 0, background: COLORS.foam }} />
@@ -559,28 +559,75 @@ function Background({ totalCents, ordererCount }: { totalCents: number; ordererC
 					top: 34,
 					display: 'flex',
 					justifyContent: 'space-between',
-					alignItems: 'flex-start',
+					alignItems: 'center',
 					gap: 24,
 				}}
 			>
 				<div>
-					<div style={{ fontSize: 18, fontWeight: 700, color: COLORS.seaInk, letterSpacing: -0.3 }}>Kimchi Train</div>
-					<div style={{ fontSize: 14, color: COLORS.seaInkSoft, marginTop: 4 }}>{ordererCount} orderers</div>
+					<div style={{ fontSize: 64, fontWeight: 800, color: COLORS.seaInk, letterSpacing: -2.4, lineHeight: 0.92 }}>
+						Kimchi Train
+					</div>
 				</div>
 				<div
 					style={{
-						padding: '14px 18px',
-						borderRadius: 18,
-						background: COLORS.surfaceStrong,
-						border: `1px solid ${COLORS.line}`,
-						boxShadow: '0 12px 24px rgba(28, 25, 23, 0.05)',
+						position: 'relative',
+						width: 192,
+						height: 192,
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
 					}}
 				>
-					<div style={{ fontSize: 12, color: COLORS.seaInkSoft, textTransform: 'uppercase', letterSpacing: 1.1 }}>
-						Total
-					</div>
-					<div style={{ fontSize: 28, fontWeight: 700, letterSpacing: -0.8, color: COLORS.palm, marginTop: 2 }}>
-						{money(totalCents)}
+					{Array.from({ length: 12 }).map((_, index) => {
+						const angle = (360 / 12) * index
+						return (
+							<div
+								key={angle}
+								style={{
+									position: 'absolute',
+									left: '50%',
+									top: '50%',
+									width: 22,
+									height: 54,
+									marginLeft: -11,
+									marginTop: -96,
+									background: '#fbbf24',
+									clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+									transform: `rotate(${angle}deg)`,
+									transformOrigin: 'center 96px',
+									opacity: 0.95,
+								}}
+							/>
+						)
+					})}
+					<div
+						style={{
+							position: 'absolute',
+							width: 148,
+							height: 148,
+							borderRadius: '50%',
+							background: 'radial-gradient(circle at 35% 35%, #fef9c3 0%, #fde68a 26%, #fbbf24 62%, #f59e0b 100%)',
+							boxShadow: '0 0 0 12px rgba(251, 191, 36, 0.18), 0 20px 40px rgba(217, 119, 6, 0.18)',
+						}}
+					/>
+					<div
+						style={{
+							position: 'absolute',
+							width: 116,
+							height: 116,
+							borderRadius: '50%',
+							background: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.32), rgba(255,255,255,0) 48%)',
+						}}
+					/>
+					<div style={{ position: 'relative', textAlign: 'center', color: '#7c2d12', zIndex: 1 }}>
+						<div
+							style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.1, textTransform: 'uppercase', opacity: 0.8 }}
+						>
+							Total
+						</div>
+						<div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1.4, lineHeight: 0.95, marginTop: 4 }}>
+							{money(totalCents)}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -605,7 +652,7 @@ export function OrderSummaryVideo(props: OrderSummaryVideoProps) {
 				color: COLORS.seaInk,
 			}}
 		>
-			<Background totalCents={props.totalCents} ordererCount={props.orderers.length} />
+			<Background totalCents={props.totalCents} />
 			<Track frame={frame} />
 
 			<div
