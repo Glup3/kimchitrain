@@ -36,6 +36,13 @@
 			"when": 1792023468551,
 			"tag": "0004_updated_menu_prices",
 			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1792053853219,
+			"tag": "0005_historical_menu_photos",
+			"breakpoints": true
 		}
 	]
 }

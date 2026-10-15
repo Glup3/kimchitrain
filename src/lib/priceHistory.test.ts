@@ -41,6 +41,22 @@ describe('menu inflation', () => {
 			{ timestamp: 10, priceCents: 150 },
 		])
 	})
+	it('does not apply older photo observations as new price changes to the original basket', () => {
+		expect(
+			buildBasket([
+				record(1, 1, 100, 10, true),
+				record(2, 2, 200, 10, true),
+				record(3, 1, 150, 20),
+				// Imported later, with higher IDs, but observed before the app baseline.
+				record(4, 1, 50, 1),
+				record(5, 1, 75, 5),
+				record(6, 2, 150, 5),
+			]),
+		).toEqual([
+			{ timestamp: 10, priceCents: 300 },
+			{ timestamp: 20, priceCents: 350 },
+		])
+	})
 	it('handles absent baselines and zero prices without inventing percentages', () => {
 		expect(buildBasket([record(1, 1, 100, 10)])).toEqual([])
 		expect(percentageChange(0, 100)).toBeNull()

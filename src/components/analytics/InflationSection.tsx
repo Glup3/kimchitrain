@@ -148,6 +148,8 @@ export function InflationSection() {
 				<h2 className="font-['Syne',sans-serif] text-xl font-bold">Dish by dish</h2>
 				<p className="mt-1 text-sm text-[var(--sea-ink-soft)]">
 					Largest percentage increases first. Expand a dish for its recorded history and prices observed in orders.
+					Historical menu photos are included here. When only the month is known, day 1 is a date placeholder; the
+					source identifies these observations. They do not establish when a price changed.
 				</p>
 			</div>
 			<div className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-strong)]">
@@ -171,7 +173,7 @@ export function InflationSection() {
 							<summary className="grid cursor-pointer list-none grid-cols-[1fr_auto_20px] items-center gap-3 px-5 py-4 text-sm hover:bg-[var(--lagoon-glow)] md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1.3fr_20px]">
 								<span className="font-semibold">
 									{dish.name}
-									{initial && !initial.isBaseline && (
+									{initial && !entries.some((entry) => entry.isBaseline) && (
 										<span className="mt-1 block text-xs font-normal text-[var(--sea-ink-soft)]">
 											Outside original basket
 										</span>
@@ -209,7 +211,7 @@ export function InflationSection() {
 											<div>
 												<span>
 													{entry.isBaseline
-														? 'Initial recorded price'
+														? 'Original app baseline'
 														: entry.effectiveFrom === null
 															? `Recorded on ${date(entry.recordedAt)}`
 															: `Effective from ${date(entry.effectiveFrom)}`}
