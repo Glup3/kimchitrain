@@ -1,0 +1,300 @@
+{
+	"id": "a5e284e8-26ac-4852-9014-40a0e59fec89",
+	"prevId": "459fb7e0-336b-417c-b679-67725746e2d9",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.dish_groups": {
+			"name": "dish_groups",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.dish_price_history": {
+			"name": "dish_price_history",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"identity": {
+						"name": "dish_price_history_id_seq",
+						"increment": "1",
+						"minValue": "1",
+						"maxValue": "2147483647",
+						"startWith": "1",
+						"cache": "1",
+						"cycle": false,
+						"schema": "public",
+						"type": "always"
+					}
+				},
+				"dish_id": {
+					"name": "dish_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"price_cents": {
+					"name": "price_cents",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"effective_from": {
+					"name": "effective_from",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"recorded_at": {
+					"name": "recorded_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"source": {
+					"name": "source",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"is_baseline": {
+					"name": "is_baseline",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {
+				"dish_price_history_baseline": {
+					"name": "dish_price_history_baseline",
+					"columns": [
+						{
+							"expression": "dish_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"with": {},
+					"method": "btree",
+					"where": "\"dish_price_history\".\"is_baseline\"",
+					"concurrently": false
+				}
+			},
+			"foreignKeys": {
+				"dish_price_history_dish_id_dishes_id_fk": {
+					"name": "dish_price_history_dish_id_dishes_id_fk",
+					"tableFrom": "dish_price_history",
+					"columnsFrom": ["dish_id"],
+					"tableTo": "dishes",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"dish_price_history_nonnegative": {
+					"name": "dish_price_history_nonnegative",
+					"value": "\"dish_price_history\".\"price_cents\" >= 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.dishes": {
+			"name": "dishes",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"price_cents": {
+					"name": "price_cents",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"is_popular": {
+					"name": "is_popular",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"group_id": {
+					"name": "group_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"dishes_group_id_dish_groups_id_fk": {
+					"name": "dishes_group_id_dish_groups_id_fk",
+					"tableFrom": "dishes",
+					"columnsFrom": ["group_id"],
+					"tableTo": "dish_groups",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.order_items": {
+			"name": "order_items",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "varchar(26)",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"orderer": {
+					"name": "orderer",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"price_cents": {
+					"name": "price_cents",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"settled": {
+					"name": "settled",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"dish_id": {
+					"name": "dish_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"order_id": {
+					"name": "order_id",
+					"type": "varchar(26)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"order_items_dish_id_dishes_id_fk": {
+					"name": "order_items_dish_id_dishes_id_fk",
+					"tableFrom": "order_items",
+					"columnsFrom": ["dish_id"],
+					"tableTo": "dishes",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"order_items_order_id_orders_id_fk": {
+					"name": "order_items_order_id_orders_id_fk",
+					"tableFrom": "order_items",
+					"columnsFrom": ["order_id"],
+					"tableTo": "orders",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.orders": {
+			"name": "orders",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "varchar(26)",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"completed": {
+					"name": "completed",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"views": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

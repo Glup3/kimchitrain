@@ -150,7 +150,7 @@ export function AnalyticsSection() {
 	]
 	const priceRangeData = priceBuckets.map((bucket) => {
 		const count = allItems.filter((i) => {
-			const p = i.dish?.priceCents ?? i.priceCents
+			const p = i.priceCents
 			return p >= bucket.min && p < bucket.max
 		}).length
 		return { range: bucket.label, count }

@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm'
-import { boolean, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { relations, sql } from 'drizzle-orm'
+import { boolean, check, integer, pgTable, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 
 // no default values, should be handled in zero mutations https://bugs.rocicorp.dev/p/zero/issue/3465
 
@@ -18,6 +18,27 @@ export const dishes = pgTable('dishes', {
 		.notNull()
 		.references(() => dishGroups.id),
 })
+
+export const dishPriceHistory = pgTable(
+	'dish_price_history',
+	{
+		id: integer().primaryKey().generatedAlwaysAsIdentity(),
+		dishId: integer('dish_id')
+			.notNull()
+			.references(() => dishes.id),
+		priceCents: integer('price_cents').notNull(),
+		effectiveFrom: timestamp('effective_from', { withTimezone: true }),
+		recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull(),
+		source: text().notNull(),
+		isBaseline: boolean('is_baseline').notNull(),
+	},
+	(table) => [
+		check('dish_price_history_nonnegative', sql`${table.priceCents} >= 0`),
+		uniqueIndex('dish_price_history_baseline')
+			.on(table.dishId)
+			.where(sql`${table.isBaseline}`),
+	],
+)
 
 export const dishesRelations = relations(dishes, ({ one, many }) => ({
 	orderItems: many(orderItems),
