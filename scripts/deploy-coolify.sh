@@ -4,11 +4,18 @@ set -euo pipefail
 TIMEOUT="${TIMEOUT:-300}"
 INTERVAL="${INTERVAL:-10}"
 
-DEPLOY_RESPONSE=$(curl -sf \
+DEPLOY_RESPONSE=$(curl --silent --show-error --fail-with-body \
+  --request POST \
   -H "Authorization: Bearer $COOLIFY_TOKEN" \
-  "${COOLIFY_URL}/api/v1/deploy?uuid=$COOLIFY_APP_UUID")
+  "${COOLIFY_URL%/}/api/v1/deploy?uuid=$COOLIFY_APP_UUID") || {
+  echo "Failed to start deployment: $DEPLOY_RESPONSE" >&2
+  exit 1
+}
 
-DEPLOY_UUID=$(echo "$DEPLOY_RESPONSE" | jq -r '.deployments[0].deployment_uuid')
+DEPLOY_UUID=$(echo "$DEPLOY_RESPONSE" | jq -er '.deployments[0].deployment_uuid | strings | select(length > 0)') || {
+  echo "Coolify did not return a deployment UUID" >&2
+  exit 1
+}
 echo "Deployment UUID: $DEPLOY_UUID"
 
 ELAPSED=0
@@ -16,7 +23,7 @@ ELAPSED=0
 while [ $ELAPSED -lt $TIMEOUT ]; do
   RESPONSE=$(curl -s -w "\n%{http_code}" \
     -H "Authorization: Bearer $COOLIFY_TOKEN" \
-    "${COOLIFY_URL}/api/v1/deployments/$DEPLOY_UUID") || true
+    "${COOLIFY_URL%/}/api/v1/deployments/$DEPLOY_UUID") || true
 
   HTTP_CODE=$(echo "$RESPONSE" | tail -1)
   BODY=$(echo "$RESPONSE" | sed '$d')

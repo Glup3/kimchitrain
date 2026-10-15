@@ -25,6 +25,8 @@ jobs:
 
       - run: npm run lint:ts
 
+      - run: npx vitest run scripts/deploy-coolify.test.ts
+
   build:
     name: build
     needs: check
