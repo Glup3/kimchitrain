@@ -25,7 +25,7 @@ function PriceChart({ points }: { points: { timestamp: number; priceCents: numbe
 				/>
 				<YAxis
 					tickFormatter={money}
-					domain={['auto', 'auto']}
+					domain={[0, 'auto']}
 					tick={{ fontSize: 11, fill: 'var(--sea-ink-soft)' }}
 					width={75}
 				/>
