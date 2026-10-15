@@ -4,6 +4,9 @@ import { z } from 'zod'
 import { zql } from '#/db/zero-schema'
 
 export const queries = defineQueries({
+	dishPriceHistory: {
+		all: defineQuery(() => zql.dishPriceHistory.orderBy('id', 'asc')),
+	},
 	dishes: {
 		all: defineQuery(() => zql.dishes),
 		withGroup: defineQuery(() => zql.dishes.related('group')),

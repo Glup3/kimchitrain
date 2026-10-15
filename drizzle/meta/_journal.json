@@ -22,6 +22,20 @@
 			"when": 1774832700991,
 			"tag": "0002_order_item_settlement_tracking",
 			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1792023198884,
+			"tag": "0003_price_history",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1792023468551,
+			"tag": "0004_updated_menu_prices",
+			"breakpoints": true
 		}
 	]
 }
